@@ -17,7 +17,7 @@ const payloadSchema = z.object({
 export async function POST(request: Request) {
   try {
     const payload = payloadSchema.parse(await request.json())
-    const session = getTanLeridaSession(payload.sessionId)
+    const session = await getTanLeridaSession(payload.sessionId)
     const userId = await getCurrentUserIdOrDemo()
 
     if (!session || session.ownerId !== userId) {
@@ -31,11 +31,9 @@ export async function POST(request: Request) {
       return NextResponse.json({ success: false, message: rejected.reason ?? 'Photo validation failed.' }, { status: 400 })
     }
 
-    const updated = updateTanLeridaSession(payload.sessionId, {
+    const updated = await updateTanLeridaSession(payload.sessionId, {
       userPhotos: payload.photos,
       status: 'PHOTOS_UPLOADED',
-      moderationAccepted: true,
-      consent: true,
     })
 
     return NextResponse.json({ success: true, session: updated })

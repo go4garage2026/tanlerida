@@ -9,14 +9,14 @@ const schema = z.object({ sessionId: z.string().min(1) })
 export async function POST(request: Request) {
   try {
     const { sessionId } = schema.parse(await request.json())
-    const session = getTanLeridaSession(sessionId)
+    const session = await getTanLeridaSession(sessionId)
     const userId = await getCurrentUserIdOrDemo()
 
     if (!session || session.ownerId !== userId) {
       return NextResponse.json({ success: false, message: 'Session not found.' }, { status: 404 })
     }
 
-    updateTanLeridaSession(sessionId, { status: 'ANALYSING' })
+    await updateTanLeridaSession(sessionId, { status: 'ANALYSING' })
     void runTanLeridaPipeline(sessionId)
 
     return NextResponse.json({

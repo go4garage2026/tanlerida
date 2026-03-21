@@ -1,19 +1,28 @@
-import { products } from '@/lib/catalog'
-import { completeTanLeridaSession, getTanLeridaSession, updateTanLeridaSession } from '@/lib/tan-lerida-store'
+import { prisma } from '@/lib/prisma'
+import { updateTanLeridaSession, completeTanLeridaSession, getTanLeridaSession } from '@/lib/tan-lerida-store'
 import { analysePhotosWithGemini } from '@/lib/ai/gemini'
 import { claudeGenerateRecommendation } from '@/lib/ai/claude'
 import { generateOutfitImage } from '@/lib/ai/image-gen'
 
 export async function runTanLeridaPipeline(sessionId: string) {
-  const session = getTanLeridaSession(sessionId)
+  const session = await getTanLeridaSession(sessionId)
   if (!session) return
 
-  updateTanLeridaSession(sessionId, { status: 'ANALYSING' })
+  await updateTanLeridaSession(sessionId, { status: 'ANALYSING' })
 
   const photoUrls = Object.values(session.userPhotos ?? {})
   const analysis = await analysePhotosWithGemini({ photoUrls })
 
-  const candidateProducts = products.slice(0, 3)
+  // Get candidate products from DB
+  const dbProducts = await prisma.product.findMany({
+    where: { isActive: true },
+    include: { images: true, category: true, tags: true },
+    take: 6,
+  })
+  const candidateProducts = dbProducts.length > 0
+    ? dbProducts.slice(0, 3)
+    : [{ id: '', name: 'Default Product', slug: 'default', basePrice: 0 }]
+
   const recommendation = await claudeGenerateRecommendation({
     userProfile: session.bodyProfile ?? {},
     geminiAnalysis: analysis,
@@ -22,7 +31,7 @@ export async function runTanLeridaPipeline(sessionId: string) {
   })
 
   const primaryProductId = String(recommendation.primaryRecommendation?.productId ?? candidateProducts[0]?.id ?? '')
-  const product = products.find((item) => item.id === primaryProductId) ?? candidateProducts[0]
+  const product = candidateProducts.find((item) => item.id === primaryProductId) ?? candidateProducts[0]
 
   const image = await generateOutfitImage({
     baseUserPhoto: String((session.userPhotos ?? {}).fullBody ?? Object.values(session.userPhotos ?? {})[0] ?? ''),
@@ -30,7 +39,7 @@ export async function runTanLeridaPipeline(sessionId: string) {
     stylePrompt: String(recommendation.visualPrompt ?? ''),
   })
 
-  updateTanLeridaSession(sessionId, {
+  await updateTanLeridaSession(sessionId, {
     aiAnalysis: analysis,
     recommendation,
     recommendedProductId: product.id,
@@ -38,5 +47,5 @@ export async function runTanLeridaPipeline(sessionId: string) {
     status: 'RECOMMENDATION_READY',
   })
 
-  completeTanLeridaSession(sessionId)
+  await completeTanLeridaSession(sessionId)
 }

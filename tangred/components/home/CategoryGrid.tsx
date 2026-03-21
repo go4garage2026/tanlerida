@@ -3,8 +3,6 @@ import Link from 'next/link'
 import { categories } from '@/lib/catalog'
 
 export function CategoryGrid() {
-  const editorialCategories = categories.filter((category) => ['office-bags', 'belts', 'jackets'].includes(category.slug))
-
   return (
     <section className="mx-auto max-w-[1440px] px-6 py-10 md:px-10 lg:px-16">
       <div className="mb-10 flex items-end justify-between gap-4">
@@ -13,8 +11,8 @@ export function CategoryGrid() {
           <h2 className="font-heading text-[36px] md:text-[48px]">Editorial Categories</h2>
         </div>
       </div>
-      <div className="grid gap-6 lg:grid-cols-3">
-        {editorialCategories.map((category) => (
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        {categories.map((category) => (
           <Link
             key={category.id}
             href={`/category/${category.slug}`}

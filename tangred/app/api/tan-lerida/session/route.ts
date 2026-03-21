@@ -12,7 +12,8 @@ const createSchema = z.object({
 
 export async function GET() {
   const userId = await getCurrentUserIdOrDemo()
-  return NextResponse.json({ success: true, sessions: listTanLeridaSessions(userId) })
+  const sessions = await listTanLeridaSessions(userId)
+  return NextResponse.json({ success: true, sessions })
 }
 
 export async function POST(request: Request) {
@@ -20,8 +21,8 @@ export async function POST(request: Request) {
     enforceRateLimit(`tan-lerida-session:${getRequestIp(request)}`, 10, 60_000)
     const body = createSchema.parse(await request.json())
     const userId = await getCurrentUserIdOrDemo()
-    const session = createTanLeridaSession(userId)
-    const updated = updateTanLeridaSession(session.id, body)
+    const session = await createTanLeridaSession(userId)
+    const updated = await updateTanLeridaSession(session.id, body as Record<string, unknown>)
     return NextResponse.json({ success: true, session: updated })
   } catch (error) {
     return NextResponse.json({ success: false, message: error instanceof Error ? error.message : 'Unable to create session.' }, { status: 400 })

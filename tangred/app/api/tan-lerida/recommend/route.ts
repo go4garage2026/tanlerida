@@ -8,7 +8,7 @@ const schema = z.object({ sessionId: z.string().min(1) })
 export async function POST(request: Request) {
   try {
     const { sessionId } = schema.parse(await request.json())
-    const session = getTanLeridaSession(sessionId)
+    const session = await getTanLeridaSession(sessionId)
     const userId = await getCurrentUserIdOrDemo()
 
     if (!session || session.ownerId !== userId) {

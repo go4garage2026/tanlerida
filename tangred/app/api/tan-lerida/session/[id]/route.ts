@@ -4,7 +4,7 @@ import { getTanLeridaSession } from '@/lib/tan-lerida-store'
 
 export async function GET(_: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
-  const session = getTanLeridaSession(id)
+  const session = await getTanLeridaSession(id)
   const currentUserId = await getCurrentUserIdOrDemo()
 
   if (!session || session.ownerId !== currentUserId) {

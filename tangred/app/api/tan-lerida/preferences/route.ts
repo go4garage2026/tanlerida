@@ -16,14 +16,14 @@ const preferenceSchema = z.object({
 export async function POST(request: Request) {
   try {
     const payload = preferenceSchema.parse(await request.json())
-    const session = getTanLeridaSession(payload.sessionId)
+    const session = await getTanLeridaSession(payload.sessionId)
     const userId = await getCurrentUserIdOrDemo()
 
     if (!session || session.ownerId !== userId) {
       return NextResponse.json({ success: false, message: 'Session not found.' }, { status: 404 })
     }
 
-    const updated = updateTanLeridaSession(payload.sessionId, {
+    const updated = await updateTanLeridaSession(payload.sessionId, {
       stylePreferences: payload,
     })
 

@@ -1,55 +1,241 @@
-import { accountAddresses, products } from '@/lib/catalog'
-import { calculateGST, formatPrice } from '@/lib/format'
+'use client'
 
-const checkoutItems = [products[0], products[2]]
-const subtotal = checkoutItems.reduce((sum, item) => sum + (item.discountPrice ?? item.basePrice), 0)
-const gst = calculateGST(subtotal)
-const total = subtotal + gst
-const receiptReference = `TAN-DEMO-${subtotal.toString(36).toUpperCase()}`
+import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
+import { useCartStore } from '@/store/cartStore'
+import { formatPaise } from '@/lib/utils/currency'
+import type { AddressType } from '@/types'
+
+declare global {
+  interface Window {
+    Razorpay?: new (options: Record<string, unknown>) => { open: () => void }
+  }
+}
 
 export default function CheckoutPage() {
+  const router = useRouter()
+  const { items, getSubtotal, getGST, getTotal, clearCart } = useCartStore()
+  const [addresses, setAddresses] = useState<AddressType[]>([])
+  const [selectedAddressId, setSelectedAddressId] = useState<string | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [paying, setPaying] = useState(false)
+  const [error, setError] = useState('')
+
+  const subtotal = getSubtotal()
+  const gst = getGST()
+  const total = getTotal()
+
+  useEffect(() => {
+    fetch('/api/account/addresses')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success && data.addresses.length > 0) {
+          setAddresses(data.addresses)
+          const defaultAddr = data.addresses.find((a: AddressType) => a.isDefault) ?? data.addresses[0]
+          setSelectedAddressId(defaultAddr.id)
+        }
+      })
+      .finally(() => setLoading(false))
+
+    // Load Razorpay script
+    if (!document.querySelector('script[src="https://checkout.razorpay.com/v1/checkout.js"]')) {
+      const script = document.createElement('script')
+      script.src = 'https://checkout.razorpay.com/v1/checkout.js'
+      script.async = true
+      document.body.appendChild(script)
+    }
+  }, [])
+
+  if (items.length === 0) {
+    return (
+      <div className="mx-auto max-w-[1440px] px-6 pb-20 pt-32 md:px-10 lg:px-16 text-center">
+        <h1 className="font-heading text-[42px]">Checkout</h1>
+        <p className="mt-6 text-[#A0A0A0]">Your cart is empty.</p>
+        <button type="button" className="btn-primary mt-6" onClick={() => router.push('/products')}>Continue Shopping</button>
+      </div>
+    )
+  }
+
+  async function handlePayment() {
+    if (!selectedAddressId) {
+      setError('Please select a delivery address.')
+      return
+    }
+
+    setError('')
+    setPaying(true)
+
+    try {
+      const orderRes = await fetch('/api/payment/create-order', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ amount: total }),
+      })
+
+      const orderData = await orderRes.json()
+      if (!orderData.success) {
+        setError(orderData.message ?? 'Failed to create payment order.')
+        setPaying(false)
+        return
+      }
+
+      const razorpayKeyId = process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID ?? ''
+
+      const options = {
+        key: razorpayKeyId,
+        amount: total,
+        currency: 'INR',
+        name: 'Tangred',
+        description: 'Premium Indian Leather Goods',
+        order_id: orderData.order.id,
+        handler: async function (response: { razorpay_order_id: string; razorpay_payment_id: string; razorpay_signature: string }) {
+          const verifyRes = await fetch('/api/payment/verify', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              orderId: response.razorpay_order_id,
+              paymentId: response.razorpay_payment_id,
+              signature: response.razorpay_signature,
+            }),
+          })
+
+          const verifyData = await verifyRes.json()
+          if (verifyData.success) {
+            // Create order in our system
+            await fetch('/api/orders', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                addressId: selectedAddressId,
+                items: items.map((item) => ({
+                  productId: item.productId,
+                  variantId: item.variantId,
+                  quantity: item.quantity,
+                  unitPrice: item.product.discountPrice ?? item.product.basePrice,
+                })),
+                subtotal,
+                gst,
+                total,
+                razorpayOrderId: response.razorpay_order_id,
+                razorpayPayId: response.razorpay_payment_id,
+              }),
+            })
+
+            clearCart()
+            router.push('/orders')
+          } else {
+            setError('Payment verification failed. Contact support.')
+          }
+          setPaying(false)
+        },
+        modal: { ondismiss: () => setPaying(false) },
+        theme: { color: '#C0392B' },
+      }
+
+      if (window.Razorpay) {
+        const razorpay = new window.Razorpay(options)
+        razorpay.open()
+      } else {
+        setError('Payment gateway not loaded. Please refresh and try again.')
+        setPaying(false)
+      }
+    } catch {
+      setError('Payment failed. Please try again.')
+      setPaying(false)
+    }
+  }
+
   return (
     <div className="mx-auto max-w-[1440px] px-6 pb-20 pt-32 md:px-10 lg:px-16">
       <h1 className="font-heading text-[42px] md:text-[56px]">Checkout</h1>
+
+      {error && (
+        <div className="mt-4 border border-[#C0392B]/40 bg-[#C0392B]/10 p-3 text-sm text-[#E74C3C]">{error}</div>
+      )}
+
       <div className="mt-10 grid gap-10 lg:grid-cols-[1fr_400px]">
         <section className="space-y-8">
+          {/* Address Selection */}
           <div className="border border-[#2A2A2A] bg-[#111111] p-6">
-            <h2 className="font-label text-xs tracking-[0.28em] text-[#F5F5F5]">ADDRESS</h2>
-            <div className="mt-5 grid gap-4 md:grid-cols-2">
-              {accountAddresses.map((address) => (
-                <article key={address.id} className={`border p-4 ${address.isDefault ? 'border-[#C0392B]' : 'border-[#2A2A2A]'}`}>
-                  <p className="font-label text-xs tracking-[0.2em] text-[#F5F5F5]">{address.label}</p>
-                  <p className="mt-3 text-sm leading-7 text-[#A0A0A0]">{address.line1}<br />{address.line2 ? <>{address.line2}<br /></> : null}{address.city}, {address.state} {address.pincode}</p>
-                </article>
+            <h2 className="font-label text-xs tracking-[0.28em] text-[#F5F5F5]">DELIVERY ADDRESS</h2>
+            {loading ? (
+              <div className="mt-5 h-20 skeleton" />
+            ) : addresses.length === 0 ? (
+              <div className="mt-5">
+                <p className="text-sm text-[#A0A0A0]">No saved addresses.</p>
+                <button type="button" className="btn-ghost mt-3 text-xs" onClick={() => router.push('/account/addresses')}>Add Address</button>
+              </div>
+            ) : (
+              <div className="mt-5 grid gap-4 md:grid-cols-2">
+                {addresses.map((address) => (
+                  <button
+                    key={address.id}
+                    type="button"
+                    className={`border p-4 text-left transition-luxury ${selectedAddressId === address.id ? 'border-[#C0392B]' : 'border-[#2A2A2A] hover:border-[#A0A0A0]'}`}
+                    onClick={() => setSelectedAddressId(address.id)}
+                  >
+                    <p className="font-label text-xs tracking-[0.2em] text-[#F5F5F5]">{address.label}</p>
+                    <p className="mt-3 text-sm leading-7 text-[#A0A0A0]">
+                      {address.line1}<br />
+                      {address.line2 ? <>{address.line2}<br /></> : null}
+                      {address.city}, {address.state} {address.pincode}
+                    </p>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Items */}
+          <div className="border border-[#2A2A2A] bg-[#111111] p-6">
+            <h2 className="font-label text-xs tracking-[0.28em] text-[#F5F5F5]">ORDER ITEMS</h2>
+            <div className="mt-5 space-y-4">
+              {items.map((item) => (
+                <div key={item.id} className="flex items-center gap-4 border-b border-[#2A2A2A] pb-4">
+                  <div className="h-16 w-16 bg-[#1A1A1A] flex-shrink-0">
+                    {item.product.images[0] && (
+                      <img src={item.product.images[0].url} alt={item.product.name} className="h-full w-full object-cover" />
+                    )}
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-sm text-[#F5F5F5]">{item.product.name}</p>
+                    <p className="text-xs text-[#A0A0A0]">Qty: {item.quantity}</p>
+                  </div>
+                  <p className="text-sm text-[#F5F5F5]">{formatPaise((item.product.discountPrice ?? item.product.basePrice) * item.quantity)}</p>
+                </div>
               ))}
             </div>
           </div>
+
+          {/* Payment */}
           <div className="border border-[#2A2A2A] bg-[#111111] p-6">
             <h2 className="font-label text-xs tracking-[0.28em] text-[#F5F5F5]">PAYMENT</h2>
-            <div className="mt-5 space-y-4 text-sm text-[#A0A0A0]">
-              <p>Razorpay order creation is wired through the server route so UPI, cards, and net banking can be initiated with Tangred&apos;s crimson checkout theme.</p>
-              <div className="border border-[#2A2A2A] bg-black/20 p-4 font-mono-tan text-xs text-[#BFA07A]">
-                Receipt: {receiptReference}
-              </div>
-              <button type="button" className="btn-red text-xs">Pay Securely with Razorpay</button>
-            </div>
+            <p className="mt-5 text-sm text-[#A0A0A0]">Pay securely via Razorpay — UPI, cards, net banking, and wallets accepted.</p>
+            <button type="button" className="btn-red mt-5 text-xs" onClick={handlePayment} disabled={paying}>
+              {paying ? 'Processing…' : `Pay ${formatPaise(total)} Securely`}
+            </button>
           </div>
         </section>
+
+        {/* Order Summary */}
         <aside className="h-fit border border-[#2A2A2A] bg-[#111111] p-6">
           <h2 className="font-label text-xs tracking-[0.28em] text-[#F5F5F5]">ORDER SUMMARY</h2>
           <div className="mt-5 space-y-4 border-b border-[#2A2A2A] pb-5">
-            {checkoutItems.map((item) => (
+            {items.map((item) => (
               <div key={item.id} className="flex items-center justify-between gap-3 text-sm text-[#A0A0A0]">
-                <span>{item.name}</span>
-                <span>{formatPrice(item.discountPrice ?? item.basePrice)}</span>
+                <span>{item.product.name} × {item.quantity}</span>
+                <span>{formatPaise((item.product.discountPrice ?? item.product.basePrice) * item.quantity)}</span>
               </div>
             ))}
           </div>
           <div className="mt-5 space-y-3 text-sm text-[#A0A0A0]">
-            <div className="flex justify-between"><span>Subtotal</span><span>{formatPrice(subtotal)}</span></div>
-            <div className="flex justify-between"><span>GST (18%)</span><span>{formatPrice(gst)}</span></div>
+            <div className="flex justify-between"><span>Subtotal</span><span>{formatPaise(subtotal)}</span></div>
+            <div className="flex justify-between"><span>GST (18%)</span><span>{formatPaise(gst)}</span></div>
             <div className="flex justify-between"><span>Shipping</span><span className="text-[#BFA07A]">Included</span></div>
-            <div className="flex justify-between border-t border-[#2A2A2A] pt-3 text-[#F5F5F5]"><span>Total</span><span className="font-display text-2xl text-[#C0392B]">{formatPrice(total)}</span></div>
+            <div className="flex justify-between border-t border-[#2A2A2A] pt-3 text-[#F5F5F5]">
+              <span>Total</span>
+              <span className="font-display text-2xl text-[#C0392B]">{formatPaise(total)}</span>
+            </div>
           </div>
         </aside>
       </div>
