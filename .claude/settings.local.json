@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git -C D:/TANLERIDA add docs/superpowers/specs/2026-03-21-tangred-mobile-design.md)",
+      "Bash(git -C:*)",
+      "Bash(cat D:/TANLERIDA/tangred/app/api/tan-lerida/session/[id]/route.ts)"
+    ]
+  }
+}
