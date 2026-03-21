@@ -1,14 +1,14 @@
 import { NextResponse } from 'next/server'
 import { z } from 'zod'
 import { getCurrentUserIdOrDemo } from '@/lib/request-auth'
-import { getTanLeidaSession } from '@/lib/tan-leida-store'
+import { getTanLeridaSession } from '@/lib/tan-lerida-store'
 
 const schema = z.object({ sessionId: z.string().min(1) })
 
 export async function POST(request: Request) {
   try {
     const { sessionId } = schema.parse(await request.json())
-    const session = getTanLeidaSession(sessionId)
+    const session = getTanLeridaSession(sessionId)
     const userId = await getCurrentUserIdOrDemo()
 
     if (!session || session.ownerId !== userId) {

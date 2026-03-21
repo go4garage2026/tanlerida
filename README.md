@@ -22,7 +22,7 @@
 ## 📖 Table of Contents
 
 - [Overview](#overview)
-- [The Tan Leida AI Agent](#-the-tan-leida-ai-agent)
+- [The Tan Lerida AI Agent](#-the-tan-lerida-ai-agent)
 - [Features](#features)
 - [Tech Stack](#tech-stack)
 - [Project Structure](#project-structure)
@@ -54,18 +54,18 @@ Tangred represents the perfect fusion of **Indian craftsmanship** with **Europea
 
 - **Visual Gravitas**: Dark, luxurious UI inspired by European fashion houses
 - **Premium Experience**: Every interaction feels bespoke and exclusive
-- **AI-Powered Styling**: Revolutionary "Tan Leida" AI tailor for personalized recommendations
+- **AI-Powered Styling**: Revolutionary "Tan Lerida" AI tailor for personalized recommendations
 - **Seamless Commerce**: End-to-end shopping experience from discovery to delivery
 
 ---
 
-## 🤖 The Tan Leida AI Agent
+## 🤖 The Tan Lerida AI Agent
 
-**Tan Leida** (तान लेइडा) — *Your AI Bespoke Styling Assistant*
+**Tan Lerida** (तान लेइडा) — *Your AI Bespoke Styling Assistant*
 
-### What is Tan Leida?
+### What is Tan Lerida?
 
-Tan Leida is an innovative AI-powered styling consultant that helps customers find the perfect leather products based on their:
+Tan Lerida is an innovative AI-powered styling consultant that helps customers find the perfect leather products based on their:
 
 - 📸 **Body Profile Analysis** - Upload photos for AI vision analysis
 - 🎨 **Skin Tone Matching** - Color recommendations that complement you
@@ -84,7 +84,7 @@ Step 5: Complete Purchase → Checkout with personalized recommendations
 
 ### Pricing
 
-- **Tan Leida Consultation**: ₹99 + GST (one-time fee)
+- **Tan Lerida Consultation**: ₹99 + GST (one-time fee)
 - Includes: AI analysis, personalized recommendations, generated preview image
 
 ---
@@ -198,8 +198,8 @@ TANLERIDA/
 │   │   │   ├── addresses/
 │   │   │   ├── orders/
 │   │   │   ├── wishlist/
-│   │   │   └── tan-leida/
-│   │   ├── 📁 tan-leida/           # AI styling feature
+│   │   │   └── tan-lerida/
+│   │   ├── 📁 tan-lerida/           # AI styling feature
 │   │   │   ├── payment/
 │   │   │   └── session/[id]/
 │   │   ├── 📁 api/                 # API routes
@@ -208,7 +208,7 @@ TANLERIDA/
 │   │   │   ├── cart/
 │   │   │   ├── orders/
 │   │   │   ├── payment/
-│   │   │   └── tan-leida/
+│   │   │   └── tan-lerida/
 │   │   ├── layout.tsx              # Root layout
 │   │   ├── page.tsx                # Home page
 │   │   └── globals.css             # Global styles
@@ -223,13 +223,13 @@ TANLERIDA/
 │   │   │   ├── FeaturedProducts.tsx
 │   │   │   ├── CategoryGrid.tsx
 │   │   │   ├── BrandStory.tsx
-│   │   │   └── TanLeidaTeaser.tsx
+│   │   │   └── TanLeridaTeaser.tsx
 │   │   ├── product/                # Product components
 │   │   │   ├── ProductCard.tsx
 │   │   │   └── ProductDetail.tsx
 │   │   ├── cart/                   # Cart components
 │   │   │   └── CartDrawer.tsx
-│   │   ├── tan-leida/              # AI feature components
+│   │   ├── tan-lerida/              # AI feature components
 │   │   │   ├── PhotoUpload.tsx
 │   │   │   ├── BodyProfile.tsx
 │   │   │   ├── StylePreferences.tsx
@@ -244,7 +244,7 @@ TANLERIDA/
 │   │   │   ├── anthropic.ts        # Claude client
 │   │   │   ├── pinecone.ts         # Vector search
 │   │   │   ├── cloudinary.ts       # Image uploads
-│   │   │   └── pipeline.ts         # Tan Leida orchestrator
+│   │   │   └── pipeline.ts         # Tan Lerida orchestrator
 │   │   ├── auth.ts                 # Authentication config
 │   │   ├── catalog.ts              # Product catalog data
 │   │   ├── prisma.ts               # Database client
@@ -389,7 +389,7 @@ FROM_EMAIL="noreply@tangred.com"
 # APPLICATION
 # =============================================================================
 NEXT_PUBLIC_APP_URL="http://localhost:3000"
-NEXT_PUBLIC_TAN_LEIDA_PRICE="99"
+NEXT_PUBLIC_TAN_Lerida_PRICE="99"
 ```
 
 > 💡 **Note**: For development without real API keys, the app includes mock fallbacks for all services.
@@ -418,13 +418,13 @@ Our database is designed using **Prisma ORM** with the following core entities:
 │                          USER                                   │
 ├─────────────────────────────────────────────────────────────────┤
 │  id • email • name • passwordHash • googleId • phone           │
-│  isVerified • tanLeidaAccess • tanLeidaId • createdAt          │
+│  isVerified • TanLeridaAccess • TanLeridaId • createdAt          │
 └──────────────────┬──────────────────────────────────────────────┘
                    │
     ┌──────────────┼──────────────┬──────────────┬──────────────┐
     ▼              ▼              ▼              ▼              ▼
 ┌─────────┐  ┌─────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐
-│ ADDRESS │  │  ORDER  │  │   CART   │  │ WISHLIST │  │ TanLeida │
+│ ADDRESS │  │  ORDER  │  │   CART   │  │ WISHLIST │  │ TanLerida │
 └─────────┘  └─────────┘  └──────────┘  └──────────┘  │ SESSION  │
                                                        └──────────┘
 ```

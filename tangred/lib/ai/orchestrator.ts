@@ -1,14 +1,14 @@
 import { products } from '@/lib/catalog'
-import { completeTanLeidaSession, getTanLeidaSession, updateTanLeidaSession } from '@/lib/tan-leida-store'
+import { completeTanLeridaSession, getTanLeridaSession, updateTanLeridaSession } from '@/lib/tan-lerida-store'
 import { analysePhotosWithGemini } from '@/lib/ai/gemini'
 import { claudeGenerateRecommendation } from '@/lib/ai/claude'
 import { generateOutfitImage } from '@/lib/ai/image-gen'
 
-export async function runTanLeidaPipeline(sessionId: string) {
-  const session = getTanLeidaSession(sessionId)
+export async function runTanLeridaPipeline(sessionId: string) {
+  const session = getTanLeridaSession(sessionId)
   if (!session) return
 
-  updateTanLeidaSession(sessionId, { status: 'ANALYSING' })
+  updateTanLeridaSession(sessionId, { status: 'ANALYSING' })
 
   const photoUrls = Object.values(session.userPhotos ?? {})
   const analysis = await analysePhotosWithGemini({ photoUrls })
@@ -30,7 +30,7 @@ export async function runTanLeidaPipeline(sessionId: string) {
     stylePrompt: String(recommendation.visualPrompt ?? ''),
   })
 
-  updateTanLeidaSession(sessionId, {
+  updateTanLeridaSession(sessionId, {
     aiAnalysis: analysis,
     recommendation,
     recommendedProductId: product.id,
@@ -38,5 +38,5 @@ export async function runTanLeidaPipeline(sessionId: string) {
     status: 'RECOMMENDATION_READY',
   })
 
-  completeTanLeidaSession(sessionId)
+  completeTanLeridaSession(sessionId)
 }

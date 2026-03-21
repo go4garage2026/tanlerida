@@ -1,7 +1,7 @@
 import Anthropic from '@anthropic-ai/sdk'
 import { isConfigured } from '@/lib/utils/guards'
 
-export const TAN_LEIDA_SYSTEM_PROMPT = `You are Tan Leida — Tangred's master tailor and personal style consultant.
+export const TAN_Lerida_SYSTEM_PROMPT = `You are Tan Lerida — Tangred's master tailor and personal style consultant.
 You speak with quiet authority, warmth, and precise craftsmanship language.
 Only recommend Tangred catalogue pieces.
 Always connect your guidance to body profile, skin tone, lifestyle, occasion, and leather craft.
@@ -26,7 +26,7 @@ export async function claudeStyleConsultation(messages: Array<{ role: 'user' | '
 
   const response = await client.messages.create({
     model,
-    system: `${TAN_LEIDA_SYSTEM_PROMPT}\nUser context: ${JSON.stringify(userContext ?? {})}`,
+    system: `${TAN_Lerida_SYSTEM_PROMPT}\nUser context: ${JSON.stringify(userContext ?? {})}`,
     max_tokens: 700,
     messages,
   })
@@ -61,7 +61,7 @@ export async function claudeGenerateRecommendation(params: {
 
   const response = await client.messages.create({
     model,
-    system: TAN_LEIDA_SYSTEM_PROMPT,
+    system: TAN_Lerida_SYSTEM_PROMPT,
     max_tokens: 1200,
     messages: [
       {

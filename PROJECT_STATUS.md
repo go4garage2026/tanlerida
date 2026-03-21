@@ -12,7 +12,7 @@
 | Component | Status | Notes |
 |-----------|--------|-------|
 | Core E-Commerce | ✅ Complete | Full shopping experience |
-| Tan Leida AI | ✅ Complete | AI styling assistant active |
+| Tan Lerida AI | ✅ Complete | AI styling assistant active |
 | Authentication | ✅ Complete | Email + Google OAuth |
 | Payments | ✅ Complete | Razorpay integration |
 | Email Service | ✅ Complete | Resend configured |
@@ -45,7 +45,7 @@
 - [x] Payment integration (Razorpay)
 - [x] Email notifications
 - [x] Wishlist functionality
-- [x] Tan Leida AI styling assistant
+- [x] Tan Lerida AI styling assistant
 - [x] Photo upload & analysis
 - [x] AI recommendations
 - [x] Vector search

@@ -24,7 +24,7 @@ export function BrandStory() {
             Each silhouette is cut in small batches, crafted by leather artisans, and finished with a disciplined eye for proportion, texture, and longevity.
           </p>
           <p>
-            The result is a digital maison for premium Indian leather goods — and Tan Leida extends that maison into a personal consultation experience.
+            The result is a digital maison for premium Indian leather goods — and Tan Lerida extends that maison into a personal consultation experience.
           </p>
         </div>
       </div>

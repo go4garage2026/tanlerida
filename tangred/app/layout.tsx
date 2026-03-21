@@ -12,7 +12,7 @@ export const metadata: Metadata = {
     template: '%s | Tangred',
   },
   description:
-    'Tangred crafts premium Indian leather goods and offers Tan Leida™, an AI styling consultation for bespoke recommendations.',
+    'Tangred crafts premium Indian leather goods and offers Tan Lerida™, an AI styling consultation for bespoke recommendations.',
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

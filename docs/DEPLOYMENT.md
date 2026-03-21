@@ -313,7 +313,7 @@ sudo systemctl restart postgresql
 - [ ] Checkout process
 - [ ] Payment integration (test mode)
 - [ ] Order confirmation email
-- [ ] Tan Leida session creation
+- [ ] Tan Lerida session creation
 - [ ] Photo upload works
 - [ ] AI analysis pipeline
 

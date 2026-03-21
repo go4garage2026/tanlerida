@@ -2,7 +2,7 @@ import { BrandStory } from '@/components/home/BrandStory'
 import { CategoryGrid } from '@/components/home/CategoryGrid'
 import { FeaturedProducts } from '@/components/home/FeaturedProducts'
 import { HeroSection } from '@/components/home/HeroSection'
-import { TanLeidaTeaser } from '@/components/home/TanLeidaTeaser'
+import { TanLeridaTeaser } from '@/components/home/TanLeridaTeaser'
 import { Testimonials } from '@/components/home/Testimonials'
 
 export default function HomePage() {
@@ -12,7 +12,7 @@ export default function HomePage() {
       <FeaturedProducts />
       <CategoryGrid />
       <BrandStory />
-      <TanLeidaTeaser />
+      <TanLeridaTeaser />
       <Testimonials />
     </div>
   )

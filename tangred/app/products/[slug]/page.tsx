@@ -1,4 +1,4 @@
-import Image from 'next/image'
+﻿import Image from 'next/image'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { Heart, Minus, Plus, Truck } from 'lucide-react'
@@ -86,7 +86,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
       <div className="mt-20">
         <div className="mb-8 flex items-center justify-between">
           <h2 className="font-heading text-[34px]">You May Also Like</h2>
-          <Link href="/tan-leida" className="text-sm uppercase tracking-[0.16em] text-[#C0392B]">Consult Tan Leida™</Link>
+          <Link href="/tan-lerida" className="text-sm uppercase tracking-[0.16em] text-[#C0392B]">Consult Tan Lerida™</Link>
         </div>
         <div className="grid gap-6 md:grid-cols-3">
           {relatedProducts.map((relatedProduct) => (

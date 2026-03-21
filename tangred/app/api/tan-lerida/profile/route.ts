@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { z } from 'zod'
 import { getCurrentUserIdOrDemo } from '@/lib/request-auth'
-import { getTanLeidaSession, updateTanLeidaSession } from '@/lib/tan-leida-store'
+import { getTanLeridaSession, updateTanLeridaSession } from '@/lib/tan-lerida-store'
 
 const profileSchema = z.object({
   sessionId: z.string().min(1),
@@ -16,14 +16,14 @@ const profileSchema = z.object({
 export async function POST(request: Request) {
   try {
     const payload = profileSchema.parse(await request.json())
-    const session = getTanLeidaSession(payload.sessionId)
+    const session = getTanLeridaSession(payload.sessionId)
     const userId = await getCurrentUserIdOrDemo()
 
     if (!session || session.ownerId !== userId) {
       return NextResponse.json({ success: false, message: 'Session not found.' }, { status: 404 })
     }
 
-    const updated = updateTanLeidaSession(payload.sessionId, {
+    const updated = updateTanLeridaSession(payload.sessionId, {
       bodyProfile: payload,
       status: 'PROFILE_COLLECTED',
     })

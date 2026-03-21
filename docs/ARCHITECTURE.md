@@ -65,7 +65,7 @@ TANLERIDA is built as a **modern full-stack web application** using the followin
 │  │  ├── /api/cart/*        → Cart operations                           │    │
 │  │  ├── /api/orders/*      → Order management                          │    │
 │  │  ├── /api/payment/*     → Razorpay integration                      │    │
-│  │  └── /api/tan-leida/*   → AI styling pipeline                       │    │
+│  │  └── /api/tan-lerida/*   → AI styling pipeline                       │    │
 │  └─────────────────────────────────────────────────────────────────────┘    │
 │                                                                              │
 │  ┌─────────────────────────────────────────────────────────────────────┐    │
@@ -137,13 +137,13 @@ app/
 ├── account/             # User account (protected)
 │   ├── addresses/
 │   ├── orders/
-│   └── tan-leida/
+│   └── tan-lerida/
 │
 └── api/                 # API routes
     ├── auth/
     ├── products/
     ├── orders/
-    └── tan-leida/
+    └── tan-lerida/
 ```
 
 #### Component Architecture
@@ -188,7 +188,7 @@ model User {
   email       String   @unique
   orders      Order[]
   cart        Cart?
-  tanLeidaSessions TanLeidaSession[]
+  TanLeridaSessions TanLeridaSession[]
   // ...
 }
 
@@ -270,11 +270,11 @@ User                    Frontend                API                     Payment 
 
 ## 🤖 AI Pipeline Architecture
 
-### Tan Leida Agent Flow
+### Tan Lerida Agent Flow
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│                         TAN LEIDA AI PIPELINE                               │
+│                         Tan Lerida AI PIPELINE                               │
 └─────────────────────────────────────────────────────────────────────────────┘
 
 Step 1: Photo Upload
@@ -331,7 +331,7 @@ Step 6: Image Generation
        ▼
 Step 7: Results
 ┌────────────────────────────────────────────────────────────┐
-│  Tan Leida Session Complete                                 │
+│  Tan Lerida Session Complete                                 │
 │  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐     │
 │  │   Analysis   │  │ Recommended  │  │   Generated  │     │
 │  │   Summary    │  │   Products   │  │    Image     │     │
@@ -343,7 +343,7 @@ Step 7: Results
 
 ```typescript
 // lib/ai/pipeline.ts
-interface TanLeidaPipeline {
+interface TanLeridaPipeline {
   // Step 1: Analyze user photos
   analyzePhotos(photos: string[]): Promise<BodyAnalysis>;
   
@@ -360,7 +360,7 @@ interface TanLeidaPipeline {
   ): Promise<string>; // Generated image URL
   
   // Orchestrate full pipeline
-  run(session: TanLeidaSession): Promise<SessionResult>;
+  run(session: TanLeridaSession): Promise<SessionResult>;
 }
 ```
 

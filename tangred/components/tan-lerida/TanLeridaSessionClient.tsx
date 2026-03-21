@@ -2,18 +2,18 @@
 
 import { useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { AnalysisLoader } from '@/components/tan-leida/AnalysisLoader'
-import { BodyProfileStep } from '@/components/tan-leida/BodyProfileStep'
-import { GeneratedOutfitCard } from '@/components/tan-leida/GeneratedOutfitCard'
-import { PhotoUploadStep } from '@/components/tan-leida/PhotoUploadStep'
-import { RecommendationCard } from '@/components/tan-leida/RecommendationCard'
-import { StylePreferenceStep } from '@/components/tan-leida/StylePreferenceStep'
+import { AnalysisLoader } from '@/components/tan-lerida/AnalysisLoader'
+import { BodyProfileStep } from '@/components/tan-lerida/BodyProfileStep'
+import { GeneratedOutfitCard } from '@/components/tan-lerida/GeneratedOutfitCard'
+import { PhotoUploadStep } from '@/components/tan-lerida/PhotoUploadStep'
+import { RecommendationCard } from '@/components/tan-lerida/RecommendationCard'
+import { StylePreferenceStep } from '@/components/tan-lerida/StylePreferenceStep'
 import { products } from '@/lib/catalog'
-import type { TanLeidaSessionType } from '@/types'
+import type { TanLeridaSessionType } from '@/types'
 
-type SessionResponse = TanLeidaSessionType & { ownerId?: string; consent?: boolean; moderationAccepted?: boolean }
+type SessionResponse = TanLeridaSessionType & { ownerId?: string; consent?: boolean; moderationAccepted?: boolean }
 
-export function TanLeidaSessionClient({ initialSession }: { initialSession: SessionResponse }) {
+export function TanLeridaSessionClient({ initialSession }: { initialSession: SessionResponse }) {
   const router = useRouter()
   const [session, setSession] = useState<SessionResponse>(initialSession)
   const [busy, setBusy] = useState(false)
@@ -44,7 +44,7 @@ export function TanLeidaSessionClient({ initialSession }: { initialSession: Sess
   const recommendation = (session.recommendation ?? {}) as { primaryRecommendation?: { narrative?: string }; narrative?: string }
 
   async function refreshSession() {
-    const response = await fetch(`/api/tan-leida/session/${session.id}`)
+    const response = await fetch(`/api/tan-lerida/session/${session.id}`)
     const data = await response.json()
     if (data.success) {
       setSession(data.session)
@@ -56,7 +56,7 @@ export function TanLeidaSessionClient({ initialSession }: { initialSession: Sess
 
   async function savePhotos() {
     setBusy(true)
-    const response = await fetch('/api/tan-leida/upload-photos', {
+    const response = await fetch('/api/tan-lerida/upload-photos', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ sessionId: session.id, photos: photoValues }),
@@ -68,7 +68,7 @@ export function TanLeidaSessionClient({ initialSession }: { initialSession: Sess
 
   async function saveProfile() {
     setBusy(true)
-    const response = await fetch('/api/tan-leida/profile', {
+    const response = await fetch('/api/tan-lerida/profile', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ sessionId: session.id, ...profileValues }),
@@ -80,7 +80,7 @@ export function TanLeidaSessionClient({ initialSession }: { initialSession: Sess
 
   async function savePreferences() {
     setBusy(true)
-    const response = await fetch('/api/tan-leida/preferences', {
+    const response = await fetch('/api/tan-lerida/preferences', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ sessionId: session.id, ...preferenceValues }),
@@ -92,7 +92,7 @@ export function TanLeidaSessionClient({ initialSession }: { initialSession: Sess
 
   async function startAnalysis() {
     setBusy(true)
-    await fetch('/api/tan-leida/analyse', {
+    await fetch('/api/tan-lerida/analyse', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ sessionId: session.id }),
@@ -129,7 +129,7 @@ export function TanLeidaSessionClient({ initialSession }: { initialSession: Sess
 
       {session.status === 'PROFILE_COLLECTED' && session.stylePreferences ? (
         <button type="button" className="btn-red" onClick={startAnalysis} disabled={busy}>
-          {busy ? 'Starting Tan Leida…' : 'Begin analysis'}
+          {busy ? 'Starting Tan Lerida…' : 'Begin analysis'}
         </button>
       ) : null}
 

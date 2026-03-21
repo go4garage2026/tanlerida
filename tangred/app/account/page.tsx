@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { Crown } from 'lucide-react'
-import { accountOrders, tanLeidaSessions } from '@/lib/catalog'
+import { accountOrders, TanLeridaSessions } from '@/lib/catalog'
 import { formatDate } from '@/lib/format'
 
 const navItems = [
@@ -8,7 +8,7 @@ const navItems = [
   { label: 'My Orders', href: '/orders' },
   { label: 'My Wishlist', href: '/account/wishlist' },
   { label: 'Saved Addresses', href: '/account/addresses' },
-  { label: 'Tan Leida™', href: '/account/tan-leida', special: true },
+  { label: 'Tan Lerida™', href: '/account/tan-lerida', special: true },
 ]
 
 export default function AccountPage() {
@@ -31,8 +31,8 @@ export default function AccountPage() {
             <p className="font-label text-xs tracking-[0.3em] text-[#C0392B]">ACCOUNT SNAPSHOT</p>
             <div className="mt-5 grid gap-4 md:grid-cols-3">
               <div className="border border-[#2A2A2A] p-4"><p className="text-sm text-[#A0A0A0]">Orders</p><p className="mt-2 font-display text-4xl">{accountOrders.length}</p></div>
-              <div className="border border-[#2A2A2A] p-4"><p className="text-sm text-[#A0A0A0]">Tan Leida Sessions</p><p className="mt-2 font-display text-4xl">{tanLeidaSessions.length}</p></div>
-              <div className="border border-[#2A2A2A] p-4"><p className="text-sm text-[#A0A0A0]">Latest Session</p><p className="mt-2 font-mono-tan text-xl text-[#BFA07A]">{tanLeidaSessions[0]?.sessionCode}</p></div>
+              <div className="border border-[#2A2A2A] p-4"><p className="text-sm text-[#A0A0A0]">Tan Lerida Sessions</p><p className="mt-2 font-display text-4xl">{TanLeridaSessions.length}</p></div>
+              <div className="border border-[#2A2A2A] p-4"><p className="text-sm text-[#A0A0A0]">Latest Session</p><p className="mt-2 font-mono-tan text-xl text-[#BFA07A]">{TanLeridaSessions[0]?.sessionCode}</p></div>
             </div>
           </div>
           <div className="border border-[#2A2A2A] bg-[#111111] p-6">

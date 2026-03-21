@@ -1,10 +1,10 @@
-import { NextResponse } from 'next/server'
+﻿import { NextResponse } from 'next/server'
 import { getCurrentUserIdOrDemo } from '@/lib/request-auth'
-import { getTanLeidaSession } from '@/lib/tan-leida-store'
+import { getTanLeridaSession } from '@/lib/tan-lerida-store'
 
 export async function GET(_: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
-  const session = getTanLeidaSession(id)
+  const session = getTanLeridaSession(id)
   const currentUserId = await getCurrentUserIdOrDemo()
 
   if (!session || session.ownerId !== currentUserId) {

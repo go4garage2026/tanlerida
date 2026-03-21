@@ -1,23 +1,23 @@
 import crypto from 'crypto'
-import { products, tanLeidaSessions } from '@/lib/catalog'
+import { products, TanLeridaSessions } from '@/lib/catalog'
 import { formatDeliveryEstimate } from '@/lib/utils/date'
-import { generateTanLeidaSessionCode } from '@/lib/utils/ids'
-import type { TanLeidaSessionType } from '@/types'
+import { generateTanLeridaSessionCode } from '@/lib/utils/ids'
+import type { TanLeridaSessionType } from '@/types'
 
-export type RuntimeSession = TanLeidaSessionType & {
+export type RuntimeSession = TanLeridaSessionType & {
   ownerId: string
   consent?: boolean
   moderationAccepted?: boolean
 }
 
 const globalStore = globalThis as typeof globalThis & {
-  __tangredTanLeidaStore?: Map<string, RuntimeSession>
+  __tangredTanLeridaStore?: Map<string, RuntimeSession>
 }
 
 const store =
-  globalStore.__tangredTanLeidaStore ??
+  globalStore.__tangredTanLeridaStore ??
   new Map<string, RuntimeSession>(
-    tanLeidaSessions.map((session) => [
+    TanLeridaSessions.map((session) => [
       session.id,
       {
         ...session,
@@ -28,24 +28,24 @@ const store =
     ])
   )
 
-if (!globalStore.__tangredTanLeidaStore) {
-  globalStore.__tangredTanLeidaStore = store
+if (!globalStore.__tangredTanLeridaStore) {
+  globalStore.__tangredTanLeridaStore = store
 }
 
-export function listTanLeidaSessions(ownerId: string) {
+export function listTanLeridaSessions(ownerId: string) {
   return Array.from(store.values()).filter((session) => session.ownerId === ownerId)
 }
 
-export function getTanLeidaSession(sessionId: string) {
+export function getTanLeridaSession(sessionId: string) {
   return store.get(sessionId)
 }
 
-export function createTanLeidaSession(ownerId: string) {
+export function createTanLeridaSession(ownerId: string) {
   const id = `session-${crypto.randomUUID()}`
   const session: RuntimeSession = {
     id,
     ownerId,
-    sessionCode: generateTanLeidaSessionCode(),
+    sessionCode: generateTanLeridaSessionCode(),
     isPaid: true,
     status: 'INITIATED',
     createdAt: new Date(),
@@ -57,7 +57,7 @@ export function createTanLeidaSession(ownerId: string) {
   return session
 }
 
-export function updateTanLeidaSession(sessionId: string, patch: Partial<RuntimeSession>) {
+export function updateTanLeridaSession(sessionId: string, patch: Partial<RuntimeSession>) {
   const current = store.get(sessionId)
   if (!current) return null
 
@@ -70,7 +70,7 @@ export function updateTanLeidaSession(sessionId: string, patch: Partial<RuntimeS
   return next
 }
 
-export function completeTanLeidaSession(sessionId: string) {
+export function completeTanLeridaSession(sessionId: string) {
   const session = store.get(sessionId)
   if (!session) return null
 

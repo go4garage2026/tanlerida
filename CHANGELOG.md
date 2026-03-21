@@ -34,13 +34,13 @@ Major release with complete e-commerce functionality and AI styling feature.
 - **User Accounts** - Registration, login, profile management
 - **Wishlist** - Save favorite products
 
-#### Tan Leida AI Agent
+#### Tan Lerida AI Agent
 - **Photo Upload** - Cloudinary integration for user photos
 - **Vision Analysis** - Google Gemini for body profile detection
 - **Style Recommendations** - Anthropic Claude for personalized suggestions
 - **Vector Search** - Pinecone for semantic product matching
 - **Image Generation** - AI-generated outfit visualizations
-- **Session Management** - Complete Tan Leida consultation workflow
+- **Session Management** - Complete Tan Lerida consultation workflow
 
 #### Authentication & Security
 - **NextAuth.js v5** - Email/password + Google OAuth
@@ -107,7 +107,7 @@ TANLERIDA/
 ## [0.2.0] - 2026-03-20
 
 ### ✨ Added
-- Tan Leida AI styling feature
+- Tan Lerida AI styling feature
 - AI pipeline orchestration
 - Cloudinary image uploads
 - Vector search integration

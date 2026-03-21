@@ -11,12 +11,12 @@ const footerLinks = {
   Support: [
     { label: 'Shipping & Returns', href: '/checkout' },
     { label: 'Care Instructions', href: '/products' },
-    { label: 'FAQs', href: '/tan-leida' },
+    { label: 'FAQs', href: '/tan-lerida' },
   ],
   Account: [
     { label: 'My Profile', href: '/account/profile' },
     { label: 'My Orders', href: '/orders' },
-    { label: 'Tan Leida™', href: '/account/tan-leida' },
+    { label: 'Tan Lerida™', href: '/account/tan-lerida' },
   ],
 }
 
@@ -28,11 +28,11 @@ export function Footer() {
           <div className="flex items-center gap-3">
             <Crown size={18} className="text-[#C0392B]" />
             <div>
-              <p className="font-label text-sm tracking-[0.24em] text-[#F5F5F5]">TAN LEIDA™ — YOUR AI MASTER TAILOR</p>
+              <p className="font-label text-sm tracking-[0.24em] text-[#F5F5F5]">Tan Lerida™ — YOUR AI MASTER TAILOR</p>
               <p className="text-xs text-[#A0A0A0]">Personalised styling, recommendation intelligence, and a made-for-you Tangred perspective.</p>
             </div>
           </div>
-          <Link href="/tan-leida/payment" className="btn-outline text-xs">
+          <Link href="/tan-lerida/payment" className="btn-outline text-xs">
             Begin Consultation — ₹99
           </Link>
         </div>

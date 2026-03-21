@@ -65,7 +65,7 @@ export default function ProductsPage() {
         <section>
           <div className="mb-6 flex items-center justify-between text-sm text-[#A0A0A0]">
             <p>Showing {products.length} premium pieces</p>
-            <Link href="/tan-leida" className="text-[#C0392B]">Need help choosing? Meet Tan Leida™</Link>
+            <Link href="/tan-lerida" className="text-[#C0392B]">Need help choosing? Meet Tan Lerida™</Link>
           </div>
           <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
             {products.map((product) => (

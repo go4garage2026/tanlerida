@@ -132,7 +132,7 @@ const products: SeedProduct[] = [
     material: 'Nappa leather',
     leadTimeDays: 21,
     images: ['https://images.unsplash.com/photo-1551232864-3f0890e580d9?auto=format&fit=crop&w=1200&q=80'],
-    tags: ['Tan Leida Pick'],
+    tags: ['Tan Lerida Pick'],
     variants: [
       { color: 'Obsidian', size: 'M', finish: 'Matte', stock: 2, priceAdj: 0 },
       { color: 'Obsidian', size: 'L', finish: 'Matte', stock: 2, priceAdj: 0 },

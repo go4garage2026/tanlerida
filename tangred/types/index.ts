@@ -3,15 +3,15 @@ import 'next-auth'
 declare module 'next-auth' {
   interface User {
     id: string
-    tanLeidaAccess?: boolean
-    tanLeidaId?: string | null
+    TanLeridaAccess?: boolean
+    TanLeridaId?: string | null
   }
 
   interface Session {
     user: User & {
       id: string
-      tanLeidaAccess: boolean
-      tanLeidaId: string | null
+      TanLeridaAccess: boolean
+      TanLeridaId: string | null
     }
   }
 }
@@ -132,7 +132,7 @@ export type OrderStatus =
   | 'CANCELLED'
   | 'REFUNDED'
 
-export type TanLeidaStatus =
+export type TanLeridaStatus =
   | 'INITIATED'
   | 'PHOTOS_UPLOADED'
   | 'PROFILE_COLLECTED'
@@ -140,11 +140,11 @@ export type TanLeidaStatus =
   | 'RECOMMENDATION_READY'
   | 'COMPLETED'
 
-export interface TanLeidaSessionType {
+export interface TanLeridaSessionType {
   id: string
   sessionCode: string
   isPaid: boolean
-  status: TanLeidaStatus
+  status: TanLeridaStatus
   userPhotos?: Record<string, string>
   bodyProfile?: Record<string, unknown>
   stylePreferences?: Record<string, unknown>

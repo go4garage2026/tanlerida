@@ -52,8 +52,8 @@ export function HeroSection() {
           <Link href="/products" className="btn-primary">
             Explore Collection
           </Link>
-          <Link href="/tan-leida" className="btn-outline shadow-[0_0_24px_rgba(192,57,43,0.15)]">
-            Meet Tan Leida™
+          <Link href="/tan-lerida" className="btn-outline shadow-[0_0_24px_rgba(192,57,43,0.15)]">
+            Meet Tan Lerida™
           </Link>
         </motion.div>
       </div>

@@ -39,12 +39,12 @@ CREATE INDEX IF NOT EXISTS idx_order_created ON "Order"(createdAt);
 -- User indexes
 CREATE INDEX IF NOT EXISTS idx_user_email ON "User"(email);
 CREATE INDEX IF NOT EXISTS idx_user_google ON "User"(googleId) WHERE googleId IS NOT NULL;
-CREATE INDEX IF NOT EXISTS idx_user_tanleida ON "User"(tanLeidaId) WHERE tanLeidaId IS NOT NULL;
+CREATE INDEX IF NOT EXISTS idx_user_TanLerida ON "User"(TanLeridaId) WHERE TanLeridaId IS NOT NULL;
 
--- Tan Leida Session indexes
-CREATE INDEX IF NOT EXISTS idx_tl_session_user ON TanLeidaSession(userId);
-CREATE INDEX IF NOT EXISTS idx_tl_session_code ON TanLeidaSession(sessionCode);
-CREATE INDEX IF NOT EXISTS idx_tl_session_status ON TanLeidaSession(status);
+-- Tan Lerida Session indexes
+CREATE INDEX IF NOT EXISTS idx_tl_session_user ON TanLeridaSession(userId);
+CREATE INDEX IF NOT EXISTS idx_tl_session_code ON TanLeridaSession(sessionCode);
+CREATE INDEX IF NOT EXISTS idx_tl_session_status ON TanLeridaSession(status);
 
 -- Cart indexes
 CREATE INDEX IF NOT EXISTS idx_cart_user ON Cart(userId);

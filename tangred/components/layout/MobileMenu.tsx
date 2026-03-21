@@ -11,7 +11,7 @@ const navLinks = [
   { label: 'Collections', href: '/products' },
   { label: 'Leather Goods', href: '/products' },
   { label: 'Our Craft', href: '/#craft' },
-  { label: 'Tan Leida™', href: '/tan-leida', special: true },
+  { label: 'Tan Lerida™', href: '/tan-lerida', special: true },
 ]
 
 export function MobileMenu() {

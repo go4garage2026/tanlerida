@@ -4,7 +4,7 @@ import type {
   OrderType,
   Product,
   Review,
-  TanLeidaSessionType,
+  TanLeridaSessionType,
   Testimonial,
 } from '@/types'
 
@@ -186,7 +186,7 @@ export const products: Product[] = [
     slug: 'tangred-moto-jacket',
     name: 'Tangred Moto Jacket',
     description: 'Supple nappa leather outerwear cut for a contemporary metropolitan stance.',
-    longDesc: 'The Moto Jacket pairs a clean shoulder line, tonal hardware, and a softly structured waist. It is the Tan Leida answer for evenings, presentations, and high-confidence entrances.',
+    longDesc: 'The Moto Jacket pairs a clean shoulder line, tonal hardware, and a softly structured waist. It is the Tan Lerida answer for evenings, presentations, and high-confidence entrances.',
     basePrice: 2499900,
     sku: 'TAN-JA-0004',
     stock: 4,
@@ -204,7 +204,7 @@ export const products: Product[] = [
       { id: 'var-7', color: 'Obsidian', size: 'M', finish: 'Matte', stock: 2, priceAdj: 0 },
       { id: 'var-8', color: 'Obsidian', size: 'L', finish: 'Matte', stock: 2, priceAdj: 0 },
     ],
-    tags: [{ id: 'tag-5', tag: 'Tan Leida Pick' }],
+    tags: [{ id: 'tag-5', tag: 'Tan Lerida Pick' }],
     reviews,
     categorySlug: 'jackets',
   }),
@@ -337,7 +337,7 @@ export const testimonials: Testimonial[] = [
     id: 'test-1',
     name: 'Ritika Sharma',
     city: 'New Delhi',
-    quote: 'Tan Leida recommended the exact bag silhouette I needed for investor meetings. The result felt tailored, not generic.',
+    quote: 'Tan Lerida recommended the exact bag silhouette I needed for investor meetings. The result felt tailored, not generic.',
     rating: 5,
   },
   {
@@ -422,7 +422,7 @@ export const accountOrders: OrderType[] = [
   },
 ]
 
-export const tanLeidaSessions: TanLeidaSessionType[] = [
+export const TanLeridaSessions: TanLeridaSessionType[] = [
   {
     id: 'session-1',
     sessionCode: 'TL-AB3K7M2P',
@@ -470,14 +470,14 @@ export const tanLeidaSessions: TanLeidaSessionType[] = [
   },
 ]
 
-export const tanLeidaFaqs = [
+export const TanLeridaFaqs = [
   {
     question: 'What does the ₹99 + GST consultation include?',
     answer: 'You receive a guided consultation, profile analysis, Tangred product matching, and a generated visual recommendation with pricing and delivery guidance.',
   },
   {
     question: 'How long does the session remain available?',
-    answer: 'Your Tan Leida ID remains attached to your account, and each completed session stays accessible from your dashboard for future review.',
+    answer: 'Your Tan Lerida ID remains attached to your account, and each completed session stays accessible from your dashboard for future review.',
   },
   {
     question: 'Do I need to upload all four photos?',
@@ -485,15 +485,15 @@ export const tanLeidaFaqs = [
   },
   {
     question: 'Can I start a new consultation later?',
-    answer: 'Yes. Once access is unlocked, you can initiate additional sessions from your Tan Leida hub and preserve a personal recommendation history.',
+    answer: 'Yes. Once access is unlocked, you can initiate additional sessions from your Tan Lerida hub and preserve a personal recommendation history.',
   },
 ]
 
-export const tanLeidaSteps = [
+export const TanLeridaSteps = [
   {
     id: 'step-1',
     title: 'Upload Photos',
-    description: 'Share casual, formal, and full-body images so Tan Leida can read silhouette, drape, and personal presence.',
+    description: 'Share casual, formal, and full-body images so Tan Lerida can read silhouette, drape, and personal presence.',
   },
   {
     id: 'step-2',

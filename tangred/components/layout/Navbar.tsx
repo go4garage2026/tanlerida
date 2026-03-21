@@ -13,7 +13,7 @@ const navLinks = [
   { label: 'Collections', href: '/products' },
   { label: 'Leather Goods', href: '/products' },
   { label: 'Our Craft', href: '/#craft' },
-  { label: 'Tan Leida™', href: '/tan-leida', special: true },
+  { label: 'Tan Lerida™', href: '/tan-lerida', special: true },
 ]
 
 export function Navbar() {
@@ -110,12 +110,12 @@ export function Navbar() {
                           </Link>
                         ))}
                         <Link
-                          href="/account/tan-leida"
+                          href="/account/tan-lerida"
                           className="flex items-center gap-2 px-4 py-3 text-xs uppercase tracking-[0.16em] text-[#C0392B] transition-luxury hover:bg-[#1A1A1A]"
                           onClick={() => setUserMenuOpen(false)}
                         >
                           <Crown size={12} />
-                          Tan Leida™
+                          Tan Lerida™
                         </Link>
                         <button
                           type="button"

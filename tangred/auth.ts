@@ -46,8 +46,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           email: user.email,
           name: user.name,
           image: user.avatarUrl,
-          tanLeidaAccess: user.tanLeidaAccess,
-          tanLeidaId: user.tanLeidaId,
+          TanLeridaAccess: user.TanLeridaAccess,
+          TanLeridaId: user.TanLeridaId,
         }
       },
     }),
@@ -56,20 +56,20 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     async jwt({ token, user, trigger }) {
       if (user?.id) {
         token.id = user.id
-        token.tanLeidaAccess = user.tanLeidaAccess ?? false
-        token.tanLeidaId = user.tanLeidaId ?? null
+        token.TanLeridaAccess = user.TanLeridaAccess ?? false
+        token.TanLeridaId = user.TanLeridaId ?? null
       }
 
       if ((trigger === 'update' || !token.id) && token.email) {
         const dbUser = await prisma.user.findUnique({
           where: { email: String(token.email) },
-          select: { id: true, tanLeidaAccess: true, tanLeidaId: true },
+          select: { id: true, TanLeridaAccess: true, TanLeridaId: true },
         })
 
         if (dbUser) {
           token.id = dbUser.id
-          token.tanLeidaAccess = dbUser.tanLeidaAccess
-          token.tanLeidaId = dbUser.tanLeidaId
+          token.TanLeridaAccess = dbUser.TanLeridaAccess
+          token.TanLeridaId = dbUser.TanLeridaId
         }
       }
 
@@ -78,8 +78,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     async session({ session, token }) {
       if (session.user) {
         session.user.id = String(token.id)
-        session.user.tanLeidaAccess = Boolean(token.tanLeidaAccess)
-        session.user.tanLeidaId = token.tanLeidaId ? String(token.tanLeidaId) : null
+        session.user.TanLeridaAccess = Boolean(token.TanLeridaAccess)
+        session.user.TanLeridaId = token.TanLeridaId ? String(token.TanLeridaId) : null
       }
       return session
     },

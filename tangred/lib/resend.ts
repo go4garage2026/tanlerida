@@ -62,18 +62,18 @@ export function sendOrderConfirmationEmail(to: string, name: string, orderNumber
   })
 }
 
-export function sendTanLeidaAccessEmail(to: string, name: string, tanLeidaId: string) {
+export function sendTanLeridaAccessEmail(to: string, name: string, TanLeridaId: string) {
   return sendEmail({
     to,
-    subject: `Tan Leida access confirmed — ${tanLeidaId}`,
-    html: frameEmail('Tan Leida access confirmed', `<p>Dear ${name},</p><p>Your Tan Leida access ID is <strong style="color:#C0392B;letter-spacing:0.2em;">${tanLeidaId}</strong>.</p>`),
+    subject: `Tan Lerida access confirmed — ${TanLeridaId}`,
+    html: frameEmail('Tan Lerida access confirmed', `<p>Dear ${name},</p><p>Your Tan Lerida access ID is <strong style="color:#C0392B;letter-spacing:0.2em;">${TanLeridaId}</strong>.</p>`),
   })
 }
 
-export function sendTanLeidaCompletionEmail(to: string, name: string, sessionCode: string) {
+export function sendTanLeridaCompletionEmail(to: string, name: string, sessionCode: string) {
   return sendEmail({
     to,
-    subject: `Tan Leida session ready — ${sessionCode}`,
-    html: frameEmail('Your Tan Leida session is ready', `<p>Dear ${name},</p><p>Your bespoke recommendation for session <strong style="color:#C0392B;">${sessionCode}</strong> is ready in your Tangred account.</p>`),
+    subject: `Tan Lerida session ready — ${sessionCode}`,
+    html: frameEmail('Your Tan Lerida session is ready', `<p>Dear ${name},</p><p>Your bespoke recommendation for session <strong style="color:#C0392B;">${sessionCode}</strong> is ready in your Tangred account.</p>`),
   })
 }

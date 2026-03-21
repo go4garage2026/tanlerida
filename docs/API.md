@@ -12,7 +12,7 @@ Complete reference for all API endpoints in the Tangred e-commerce platform.
 - [Cart Endpoints](#cart-endpoints)
 - [Order Endpoints](#order-endpoints)
 - [Payment Endpoints](#payment-endpoints)
-- [Tan Leida Endpoints](#tan-leida-endpoints)
+- [Tan Lerida Endpoints](#tan-lerida-endpoints)
 - [Error Codes](#error-codes)
 
 ---
@@ -569,11 +569,11 @@ Verify payment signature.
 
 ---
 
-## 🤖 Tan Leida Endpoints
+## 🤖 Tan Lerida Endpoints
 
-### POST /api/tan-leida/session
+### POST /api/tan-lerida/session
 
-Create a new Tan Leida styling session.
+Create a new Tan Lerida styling session.
 
 **Auth Required:** Yes
 
@@ -591,7 +591,7 @@ Create a new Tan Leida styling session.
   "data": {
     "session": {
       "id": "tls_cuid",
-      "tanLeidaId": "TL-2026-A1B2C3",
+      "TanLeridaId": "TL-2026-A1B2C3",
       "status": "pending_payment",
       "price": 9900,
       "razorpayOrderId": "order_xxxxxxxx"
@@ -602,7 +602,7 @@ Create a new Tan Leida styling session.
 
 ---
 
-### POST /api/tan-leida/upload-photos
+### POST /api/tan-lerida/upload-photos
 
 Upload user photos for analysis.
 
@@ -634,7 +634,7 @@ sessionId: tls_cuid
 
 ---
 
-### POST /api/tan-leida/profile
+### POST /api/tan-lerida/profile
 
 Submit body profile information.
 
@@ -656,7 +656,7 @@ Submit body profile information.
 
 ---
 
-### POST /api/tan-leida/preferences
+### POST /api/tan-lerida/preferences
 
 Submit style preferences.
 
@@ -679,7 +679,7 @@ Submit style preferences.
 
 ---
 
-### POST /api/tan-leida/analyse
+### POST /api/tan-lerida/analyse
 
 Trigger AI analysis pipeline.
 
@@ -709,7 +709,7 @@ Trigger AI analysis pipeline.
 
 ---
 
-### GET /api/tan-leida/session/[id]
+### GET /api/tan-lerida/session/[id]
 
 Get session results.
 
@@ -722,7 +722,7 @@ Get session results.
   "data": {
     "session": {
       "id": "tls_cuid",
-      "tanLeidaId": "TL-2026-A1B2C3",
+      "TanLeridaId": "TL-2026-A1B2C3",
       "status": "completed",
       "photos": [...],
       "analysis": {...},

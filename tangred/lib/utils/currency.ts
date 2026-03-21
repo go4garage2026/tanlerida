@@ -1,4 +1,4 @@
-export const TAN_LEIDA_TOTAL_PAISE = 11682
+export const TAN_Lerida_TOTAL_PAISE = 11682
 export const GST_RATE = 0.18
 
 export function formatPaise(value: number) {

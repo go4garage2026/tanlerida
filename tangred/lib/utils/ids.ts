@@ -4,11 +4,11 @@ function randomToken(length: number) {
   return Array.from({ length }, () => ALPHANUMERIC[Math.floor(Math.random() * ALPHANUMERIC.length)]).join('')
 }
 
-export function generateTanLeidaSessionCode() {
+export function generateTanLeridaSessionCode() {
   return `TL-${randomToken(8)}`
 }
 
-export function generateTanLeidaId() {
+export function generateTanLeridaId() {
   return `TL-${randomToken(8)}`
 }
 
