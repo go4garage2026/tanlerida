@@ -1,6 +1,6 @@
 # Tangred Mobile App — Design Spec
 **Date:** 2026-03-21
-**Status:** Approved (rev 2 — post-review fixes)
+**Status:** Approved (rev 3 — post-review fixes round 2)
 
 ---
 
@@ -39,12 +39,14 @@ TANLERIDA/
 | Styling | StyleSheet API + React Native Reanimated 3 |
 | State | Zustand 4 |
 | Data fetching | TanStack Query v5 |
-| Auth | Expo SecureStore + JWT (jose, signed with NEXTAUTH_SECRET) |
+| Auth | Expo SecureStore + JWT (`jose` ^5.x, signed with NEXTAUTH_SECRET) |
 | Camera/Photos | Expo Camera + Expo ImagePicker |
 | Fonts | expo-google-fonts (Cormorant Garamond, Playfair Display, DM Sans, Bebas Neue) |
 | Icons | @expo/vector-icons (Feather + MaterialCommunityIcons) |
 | SVG | react-native-svg |
+| Async Storage | `@react-native-async-storage/async-storage` (wardrobeStore persistence via `zustand/middleware` `persist` + `createJSONStorage(() => AsyncStorage)`) |
 | Build | EAS Build — preview profile → .apk |
+| Backend JWT | `jose` ^5.x added as direct dependency in `tangred/package.json` (not relied on transitively from next-auth) |
 
 ---
 
@@ -105,7 +107,7 @@ All prices in the database are stored as paise (integers). `formatINR` is the ON
 launchDate  DateTime?
 ```
 
-**Add `PRE_BOOKED` to `OrderStatus` enum:**
+**Add `PRE_BOOKED` to `OrderStatus` enum** (in `prisma/schema.prisma` AND `types/index.ts` OrderStatus union):
 ```prisma
 enum OrderStatus {
   PENDING
@@ -118,6 +120,7 @@ enum OrderStatus {
   PRE_BOOKED   // ← new
 }
 ```
+Also update `types/index.ts` OrderStatus union type to include `'PRE_BOOKED'`.
 
 **New models:**
 ```prisma
@@ -207,6 +210,11 @@ All new mobile API routes call `verifyMobileJwt(request)` at the top. Existing r
 | `/api/try-on/analyse` | POST | Bearer JWT | `{ productId: string, imageUrl: string }` | `{ score: number (1-10), verdict: string, colourNotes: string, tips: string[] }` |
 | `/api/orders/prebook` | POST | Bearer JWT | `{ productId: string, variantId?: string }` | `{ order: Order }` |
 
+**New route added to backend:**
+| Route | Method | Auth | Body | Response |
+|---|---|---|---|---|
+| `/api/products/new-arrivals` | GET | none | — | `{ products: Product[] }` sorted by `createdAt desc`, `isActive: true`, limit 20. Includes `launchDate` field. Products where `launchDate` is future are pre-bookable. |
+
 **Existing routes updated to accept mobile JWT (via `getMobileOrWebUserId`):**
 - `GET /api/orders` — returns orders for the authenticated user
 - `GET /api/tan-lerida/session` — lists all sessions for the user
@@ -214,6 +222,11 @@ All new mobile API routes call `verifyMobileJwt(request)` at the top. Existing r
 - `GET /api/tan-lerida/session/[id]` — returns single session including `status`, `recommendation`, `generatedImageUrl`, `recommendedProductId`, `estimatedDelivery`
 - `POST /api/tan-lerida/upload-photos` — body: `{ sessionId, photos: { casual, formal, fullBody, ethnic? } }` (base64 data URLs)
 - `POST /api/tan-lerida/analyse` — body: `{ sessionId: string }` → response: `{ status: 'ANALYSING', messages: string[] }`
+- `POST /api/tan-lerida/profile` — updated with JWT support (see Step 2 below for exact field names)
+- `POST /api/tan-lerida/preferences` — updated with JWT support (see Step 3 below for exact field names)
+
+**Demo-user fallback removal (intentional breaking change):**
+The existing `getCurrentUserIdOrDemo()` in `lib/request-auth.ts` falls back to a demo user (`demo@tangred.in`) for unauthenticated access — this enables the current unauthenticated web demo flow. `getMobileOrWebUserId` does NOT include this demo fallback: it returns 401 if neither a valid JWT nor a NextAuth session is present. This is intentional. Web routes that currently allow unauthenticated demo access (all Tan Lerida routes) will continue to work for authenticated web users. The demo-user path is removed. If demo access needs to be preserved for web marketing pages, those routes must be explicitly exempted from `getMobileOrWebUserId` and continue using `getCurrentUserIdOrDemo()` directly.
 
 **`/api/auth/mobile-login` implementation detail:**
 - Fetch user by email from Prisma.
@@ -389,13 +402,36 @@ tangred-app/
 
 **Step 2 — Body Profile:**
 - `BodyProfileForm`: gender pills, age slider (20-60), height input (cm), build pills, skin tone swatches (6 hex values: #FAE0C8, #F0C9A0, #D4A574, #A67C52, #6B4226, #3B1F0F), style pills (multi-select).
-- On Next: POST `/api/tan-lerida/profile` (existing, updated for JWT) with `{ sessionId, gender, ageRange, height, build, skinTone, stylePreferences }`.
+- On Next: POST `/api/tan-lerida/profile` (existing, updated for JWT) with **exact field names from live Zod schema**:
+  ```json
+  { "sessionId": "...", "gender": "Male|Female|Non-binary|Prefer not to say",
+    "ageRange": "25-30", "heightCm": 175, "bodyBuild": "Athletic",
+    "skinTone": "#D4A574", "resonance": ["Classic Professional", "Minimalist"] }
+  ```
+  Note: `heightCm` (not `height`), `bodyBuild` (not `build`), `resonance` (not `stylePreferences`).
 
 **Step 3 — Style Chat:**
 - Chat bubble UI. Tan Lerida messages left-aligned (surface bubble, `TL` crimson avatar). User messages right-aligned (crimson bubble, white text).
 - Quick reply chips + TextInput bar.
-- Questions loaded from `session.chatScript` array (returned by session GET).
-- On Next: POST `/api/tan-lerida/preferences` (existing, updated for JWT) with `{ sessionId, preferences }`.
+- Chat questions are **hardcoded in the mobile app** as `constants/chatScript.ts` — there is no `chatScript` field on the server. The question sequence maps to the live `/api/tan-lerida/preferences` Zod fields:
+  ```typescript
+  export const CHAT_SCRIPT = [
+    { field: 'need',       question: "What are you primarily looking for?",
+      quickReplies: ["A leather bag", "A wallet", "A belt", "A luxury gift"] },
+    { field: 'laptopSize', question: "Do you carry a laptop? What size?",
+      quickReplies: ["13\"", "15\"", "No laptop", "Skip"], optional: true },
+    { field: 'structure',  question: "Structured or relaxed?",
+      quickReplies: ["Structured & formal", "Relaxed & slouchy", "No preference"], optional: true },
+    { field: 'budget',     question: "What is your budget?",
+      quickReplies: ["₹5k–15k", "₹15k–30k", "₹30k–60k", "Above ₹60k"] },
+    { field: 'occasion',   question: "What occasion are you shopping for?",
+      quickReplies: ["Office", "Travel", "Gifting", "Casual", "Special event"] },
+    { field: 'colours',    question: "Any colour preference?",
+      quickReplies: ["Classic black", "Tan / cognac", "Dark brown", "No preference"] },
+  ];
+  ```
+- On Next: POST `/api/tan-lerida/preferences` (existing, updated for JWT) with exact live schema fields:
+  `{ sessionId, need, laptopSize?, structure?, budget, occasion, colours }`
 
 **Step 4 — Analysis:**
 - POST `/api/tan-lerida/analyse` with `{ sessionId }` → response: `{ status: 'ANALYSING', messages: string[] }`.
@@ -459,12 +495,14 @@ clearAuth()           // in-memory only (SecureStore delete done separately)
 ```typescript
 // Write-through cache of TanStack Query data.
 // Never written to directly by mutations — only updated by query success callbacks.
-// Persisted to AsyncStorage so items show instantly on cold start while query loads.
+// Persisted to AsyncStorage via zustand/middleware `persist` + `createJSONStorage(() => AsyncStorage)`
+// so items appear instantly on cold start while the query fetches fresh data.
 { items: WardrobeItem[], outfits: Outfit[] }
 setItems(items)
 setOutfits(outfits)
 reset()
 ```
+Persistence: `import AsyncStorage from '@react-native-async-storage/async-storage'` — this package is a required peer dependency of Expo SDK 51 and must be listed in `tangred-app/package.json`.
 
 ### cartStore
 ```typescript
