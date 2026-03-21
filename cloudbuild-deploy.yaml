@@ -1,0 +1,15 @@
+steps:
+- name: 'gcr.io/cloud-builders/docker'
+  args:
+  - 'build'
+  - '-t'
+  - 'asia-south1-docker.pkg.dev/$PROJECT_ID/tangred-repo/tangred-api:latest'
+  - '-f'
+  - 'gcp/cloud-run/Dockerfile'
+  - '.'
+images:
+- 'asia-south1-docker.pkg.dev/$PROJECT_ID/tangred-repo/tangred-api:latest'
+options:
+  machineType: 'E2_HIGHCPU_8'
+  diskSizeGb: '20'
+timeout: '1800s'

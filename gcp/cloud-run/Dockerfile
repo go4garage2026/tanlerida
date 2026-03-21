@@ -17,8 +17,11 @@ WORKDIR /app
 # Copy package files
 COPY tangred/package.json tangred/package-lock.json* ./
 
-# Install production dependencies
-RUN npm ci --only=production && npm cache clean --force
+# Copy prisma schema (needed by postinstall: prisma generate)
+COPY tangred/prisma ./prisma
+
+# Install ALL dependencies (devDeps needed for build)
+RUN npm ci && npm cache clean --force
 
 # =============================================================================
 # Builder Stage

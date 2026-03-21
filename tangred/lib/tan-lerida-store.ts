@@ -58,7 +58,7 @@ function toRuntime(row: {
 }
 
 export async function listTanLeridaSessions(ownerId: string) {
-  const rows = await prisma.TanLeridaSession.findMany({
+  const rows = await prisma.tanLeridaSession.findMany({
     where: { userId: ownerId },
     orderBy: { createdAt: 'desc' },
   })
@@ -66,12 +66,12 @@ export async function listTanLeridaSessions(ownerId: string) {
 }
 
 export async function getTanLeridaSession(sessionId: string) {
-  const row = await prisma.TanLeridaSession.findUnique({ where: { id: sessionId } })
+  const row = await prisma.tanLeridaSession.findUnique({ where: { id: sessionId } })
   return row ? toRuntime(row) : null
 }
 
 export async function createTanLeridaSession(ownerId: string) {
-  const row = await prisma.TanLeridaSession.create({
+  const row = await prisma.tanLeridaSession.create({
     data: {
       userId: ownerId,
       sessionCode: generateTanLeridaSessionCode(),
@@ -94,19 +94,19 @@ export async function updateTanLeridaSession(sessionId: string, patch: Partial<R
   if (patch.recommendedProductId !== undefined) data.recommendedProductId = patch.recommendedProductId
   if (patch.estimatedDelivery !== undefined) data.estimatedDelivery = patch.estimatedDelivery
 
-  const row = await prisma.TanLeridaSession.update({ where: { id: sessionId }, data })
+  const row = await prisma.tanLeridaSession.update({ where: { id: sessionId }, data })
   return toRuntime(row)
 }
 
 export async function completeTanLeridaSession(sessionId: string) {
-  const session = await prisma.TanLeridaSession.findUnique({
+  const session = await prisma.tanLeridaSession.findUnique({
     where: { id: sessionId },
     include: { recommendedProduct: true },
   })
   if (!session) return null
 
   const leadTimeDays = session.recommendedProduct?.leadTimeDays ?? 14
-  const row = await prisma.TanLeridaSession.update({
+  const row = await prisma.tanLeridaSession.update({
     where: { id: sessionId },
     data: {
       status: 'COMPLETED',
