@@ -6,12 +6,6 @@ import { useCartStore } from '@/store/cartStore'
 import { formatPaise } from '@/lib/utils/currency'
 import type { AddressType } from '@/types'
 
-declare global {
-  interface Window {
-    Razorpay?: new (options: Record<string, unknown>) => { open: () => void }
-  }
-}
-
 export default function CheckoutPage() {
   const router = useRouter()
   const { items, getSubtotal, getGST, getTotal, clearCart } = useCartStore()
@@ -36,14 +30,6 @@ export default function CheckoutPage() {
         }
       })
       .finally(() => setLoading(false))
-
-    // Load Razorpay script
-    if (!document.querySelector('script[src="https://checkout.razorpay.com/v1/checkout.js"]')) {
-      const script = document.createElement('script')
-      script.src = 'https://checkout.razorpay.com/v1/checkout.js'
-      script.async = true
-      document.body.appendChild(script)
-    }
   }, [])
 
   if (items.length === 0) {
@@ -66,6 +52,7 @@ export default function CheckoutPage() {
     setPaying(true)
 
     try {
+      // Create a payment order (returns mock when Razorpay is not configured)
       const orderRes = await fetch('/api/payment/create-order', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -79,68 +66,38 @@ export default function CheckoutPage() {
         return
       }
 
-      const razorpayKeyId = process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID ?? ''
+      const mockPaymentId = `pay_${Date.now()}`
 
-      const options = {
-        key: razorpayKeyId,
-        amount: total,
-        currency: 'INR',
-        name: 'Tangred',
-        description: 'Premium Indian Leather Goods',
-        order_id: orderData.order.id,
-        handler: async function (response: { razorpay_order_id: string; razorpay_payment_id: string; razorpay_signature: string }) {
-          const verifyRes = await fetch('/api/payment/verify', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              orderId: response.razorpay_order_id,
-              paymentId: response.razorpay_payment_id,
-              signature: response.razorpay_signature,
-            }),
-          })
+      // Create order directly — payment is auto-accepted
+      const createRes = await fetch('/api/orders', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          addressId: selectedAddressId,
+          items: items.map((item) => ({
+            productId: item.productId,
+            variantId: item.variantId,
+            quantity: item.quantity,
+            unitPrice: item.product.discountPrice ?? item.product.basePrice,
+          })),
+          subtotal,
+          gst,
+          total,
+          razorpayOrderId: orderData.order.id,
+          razorpayPayId: mockPaymentId,
+        }),
+      })
 
-          const verifyData = await verifyRes.json()
-          if (verifyData.success) {
-            // Create order in our system
-            await fetch('/api/orders', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                addressId: selectedAddressId,
-                items: items.map((item) => ({
-                  productId: item.productId,
-                  variantId: item.variantId,
-                  quantity: item.quantity,
-                  unitPrice: item.product.discountPrice ?? item.product.basePrice,
-                })),
-                subtotal,
-                gst,
-                total,
-                razorpayOrderId: response.razorpay_order_id,
-                razorpayPayId: response.razorpay_payment_id,
-              }),
-            })
-
-            clearCart()
-            router.push('/orders')
-          } else {
-            setError('Payment verification failed. Contact support.')
-          }
-          setPaying(false)
-        },
-        modal: { ondismiss: () => setPaying(false) },
-        theme: { color: '#C0392B' },
-      }
-
-      if (window.Razorpay) {
-        const razorpay = new window.Razorpay(options)
-        razorpay.open()
+      const createData = await createRes.json()
+      if (createData.success) {
+        clearCart()
+        router.push('/orders')
       } else {
-        setError('Payment gateway not loaded. Please refresh and try again.')
-        setPaying(false)
+        setError(createData.message ?? 'Failed to create order.')
       }
     } catch {
-      setError('Payment failed. Please try again.')
+      setError('Something went wrong. Please try again.')
+    } finally {
       setPaying(false)
     }
   }
@@ -210,9 +167,9 @@ export default function CheckoutPage() {
           {/* Payment */}
           <div className="border border-[#2A2A2A] bg-[#111111] p-6">
             <h2 className="font-label text-xs tracking-[0.28em] text-[#F5F5F5]">PAYMENT</h2>
-            <p className="mt-5 text-sm text-[#A0A0A0]">Pay securely via Razorpay — UPI, cards, net banking, and wallets accepted.</p>
+            <p className="mt-5 text-sm text-[#A0A0A0]">Your order will be confirmed instantly. Payment is collected on delivery.</p>
             <button type="button" className="btn-red mt-5 text-xs" onClick={handlePayment} disabled={paying}>
-              {paying ? 'Processing…' : `Pay ${formatPaise(total)} Securely`}
+              {paying ? 'Placing order…' : `Place Order — ${formatPaise(total)}`}
             </button>
           </div>
         </section>

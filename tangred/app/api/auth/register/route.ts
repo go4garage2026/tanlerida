@@ -24,12 +24,14 @@ export async function POST(request: Request) {
         name: payload.name,
         phone: payload.phone,
         passwordHash,
+        isVerified: true,
       },
       create: {
         name: payload.name,
         email: payload.email,
         phone: payload.phone,
         passwordHash,
+        isVerified: true,
       },
     })
 

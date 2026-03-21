@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { AnalysisLoader } from '@/components/tan-lerida/AnalysisLoader'
 import { BodyProfileStep } from '@/components/tan-lerida/BodyProfileStep'
@@ -8,8 +8,8 @@ import { GeneratedOutfitCard } from '@/components/tan-lerida/GeneratedOutfitCard
 import { PhotoUploadStep } from '@/components/tan-lerida/PhotoUploadStep'
 import { RecommendationCard } from '@/components/tan-lerida/RecommendationCard'
 import { StylePreferenceStep } from '@/components/tan-lerida/StylePreferenceStep'
-import { products } from '@/lib/catalog'
-import type { TanLeridaSessionType } from '@/types'
+import { products as catalogProducts } from '@/lib/catalog'
+import type { Product, TanLeridaSessionType } from '@/types'
 
 type SessionResponse = TanLeridaSessionType & { ownerId?: string; consent?: boolean; moderationAccepted?: boolean }
 
@@ -17,6 +17,7 @@ export function TanLeridaSessionClient({ initialSession }: { initialSession: Ses
   const router = useRouter()
   const [session, setSession] = useState<SessionResponse>(initialSession)
   const [busy, setBusy] = useState(false)
+  const [dbProducts, setDbProducts] = useState<Product[]>([])
   const [photoValues, setPhotoValues] = useState<Record<string, string>>({
     casual: session.userPhotos?.casual ?? '',
     formal: session.userPhotos?.formal ?? '',
@@ -40,7 +41,19 @@ export function TanLeridaSessionClient({ initialSession }: { initialSession: Ses
     colours: String(session.stylePreferences?.colours ?? 'Prefer black, oxblood, and dark brown.'),
   })
 
-  const recommendedProduct = useMemo(() => products.find((product) => product.id === session.recommendedProductId) ?? products[0], [session.recommendedProductId])
+  // Fetch real products from DB for recommendation display
+  useEffect(() => {
+    fetch('/api/products')
+      .then((r) => r.json())
+      .then((data) => { if (data.products) setDbProducts(data.products) })
+      .catch(() => {})
+  }, [])
+
+  const allProducts = dbProducts.length > 0 ? dbProducts : catalogProducts
+  const recommendedProduct = useMemo(
+    () => allProducts.find((p) => p.id === session.recommendedProductId) ?? allProducts[0],
+    [session.recommendedProductId, allProducts]
+  )
   const recommendation = (session.recommendation ?? {}) as { primaryRecommendation?: { narrative?: string }; narrative?: string }
 
   async function refreshSession() {

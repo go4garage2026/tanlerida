@@ -9,6 +9,7 @@ export default function LoginPage() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const callbackUrl = searchParams.get('callbackUrl') ?? '/'
+  const justRegistered = searchParams.get('registered') === 'true'
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
@@ -52,6 +53,12 @@ export default function LoginPage() {
         {error && (
           <div className="mt-4 border border-[#C0392B]/40 bg-[#C0392B]/10 p-3 text-center text-sm text-[#E74C3C]">
             {error}
+          </div>
+        )}
+
+        {justRegistered && !error && (
+          <div className="mt-4 border border-[#BFA07A]/40 bg-[#BFA07A]/10 p-3 text-center text-sm text-[#BFA07A]">
+            Account created successfully. Sign in to continue.
           </div>
         )}
 

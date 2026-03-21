@@ -7,10 +7,10 @@ import { getTanLeridaSession, updateTanLeridaSession } from '@/lib/tan-lerida-st
 const payloadSchema = z.object({
   sessionId: z.string().min(1),
   photos: z.object({
-    casual: z.string().url(),
-    formal: z.string().url(),
-    fullBody: z.string().url(),
-    ethnic: z.string().url().optional(),
+    casual: z.string().min(1),
+    formal: z.string().min(1),
+    fullBody: z.string().min(1),
+    ethnic: z.string().optional(),
   }),
 })
 

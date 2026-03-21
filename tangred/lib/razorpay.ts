@@ -36,7 +36,8 @@ export async function createRazorpayOrder(amount: number, receipt = generateOrde
 
 export function verifyRazorpaySignature(orderId: string, paymentId: string, signature: string) {
   if (!isConfigured(process.env.RAZORPAY_KEY_SECRET)) {
-    return signature === 'mock_signature'
+    // Auto-accept when Razorpay is not configured
+    return true
   }
 
   const digest = crypto.createHmac('sha256', process.env.RAZORPAY_KEY_SECRET as string).update(`${orderId}|${paymentId}`).digest('hex')
