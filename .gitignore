@@ -131,3 +131,6 @@ temp/
 *.psd
 *.ai
 *.sketch
+
+# Firebase
+.firebase/

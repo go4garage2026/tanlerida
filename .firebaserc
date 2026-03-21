@@ -1,5 +1,6 @@
 {
   "projects": {
+    "production": "tanlerida-prod",
     "default": "tangred-ecommerce"
   }
 }
