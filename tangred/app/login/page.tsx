@@ -14,7 +14,7 @@ export default function LoginPage() {
         </div>
         <div className="mt-6 flex items-center justify-between text-sm text-[#A0A0A0]">
           <Link href="/register">Create account</Link>
-          <Link href="/verify">Forgot password?</Link>
+          <Link href="/forgot-password">Forgot password?</Link>
         </div>
       </div>
     </div>

@@ -8,7 +8,15 @@ import type {
   Testimonial,
 } from '@/types'
 
-const now = new Date('2026-03-20T00:00:00.000Z')
+const now = new Date()
+
+function daysAgo(days: number, hours = 0, minutes = 0) {
+  const date = new Date(now)
+  date.setDate(date.getDate() - days)
+  date.setHours(date.getHours() - hours)
+  date.setMinutes(date.getMinutes() - minutes)
+  return date
+}
 
 export const categories: Category[] = [
   {
@@ -107,7 +115,7 @@ export const products: Product[] = [
     material: 'Full-grain leather',
     origin: 'Handcrafted in India',
     leadTimeDays: 14,
-    createdAt: new Date('2026-02-15T00:00:00.000Z'),
+    createdAt: daysAgo(33),
     updatedAt: now,
     images: [
       { id: 'img-1', url: 'https://images.unsplash.com/photo-1548036328-c9fa89d128fa?auto=format&fit=crop&w=1200&q=80', altText: 'Tangred Executive Tote', isPrimary: true, sortOrder: 0 },
@@ -135,7 +143,7 @@ export const products: Product[] = [
     material: 'Top-grain leather',
     origin: 'Handcrafted in India',
     leadTimeDays: 7,
-    createdAt: new Date('2026-01-10T00:00:00.000Z'),
+    createdAt: daysAgo(69),
     updatedAt: now,
     images: [
       { id: 'img-2', url: 'https://images.unsplash.com/photo-1627123424574-724758594e93?auto=format&fit=crop&w=1200&q=80', altText: 'Tangred Slim Bifold wallet', isPrimary: true, sortOrder: 0 },
@@ -159,7 +167,7 @@ export const products: Product[] = [
     material: 'Vegetable-tanned leather',
     origin: 'Handcrafted in India',
     leadTimeDays: 10,
-    createdAt: new Date('2026-03-01T00:00:00.000Z'),
+    createdAt: daysAgo(19),
     updatedAt: now,
     images: [
       { id: 'img-3', url: 'https://images.unsplash.com/photo-1614252369475-531eba835eb1?auto=format&fit=crop&w=1200&q=80', altText: 'The Boardroom Belt', isPrimary: true, sortOrder: 0 },
@@ -187,7 +195,7 @@ export const products: Product[] = [
     material: 'Nappa leather',
     origin: 'Handcrafted in India',
     leadTimeDays: 21,
-    createdAt: new Date('2026-02-28T00:00:00.000Z'),
+    createdAt: daysAgo(20),
     updatedAt: now,
     images: [
       { id: 'img-4', url: 'https://images.unsplash.com/photo-1551232864-3f0890e580d9?auto=format&fit=crop&w=1200&q=80', altText: 'Tangred Moto Jacket', isPrimary: true, sortOrder: 0 },
@@ -214,7 +222,7 @@ export const products: Product[] = [
     material: 'Full-grain cowhide',
     origin: 'Handcrafted in India',
     leadTimeDays: 16,
-    createdAt: new Date('2026-01-25T00:00:00.000Z'),
+    createdAt: daysAgo(54),
     updatedAt: now,
     images: [
       { id: 'img-5', url: 'https://images.unsplash.com/photo-1594223274512-ad4803739b7c?auto=format&fit=crop&w=1200&q=80', altText: 'The Counsel Briefcase', isPrimary: true, sortOrder: 0 },
@@ -238,7 +246,7 @@ export const products: Product[] = [
     material: 'Calf leather',
     origin: 'Handcrafted in India',
     leadTimeDays: 5,
-    createdAt: new Date('2026-02-05T00:00:00.000Z'),
+    createdAt: daysAgo(43),
     updatedAt: now,
     images: [
       { id: 'img-6', url: 'https://images.unsplash.com/photo-1518544866330-95a4291e6606?auto=format&fit=crop&w=1200&q=80', altText: 'Tangred Card Case', isPrimary: true, sortOrder: 0 },
@@ -262,7 +270,7 @@ export const products: Product[] = [
     material: 'Crazy horse leather',
     origin: 'Handcrafted in India',
     leadTimeDays: 18,
-    createdAt: new Date('2026-03-12T00:00:00.000Z'),
+    createdAt: daysAgo(8),
     updatedAt: now,
     images: [
       { id: 'img-7', url: 'https://images.unsplash.com/photo-1554342872-034a06541bad?auto=format&fit=crop&w=1200&q=80', altText: 'The Mumbai Weekender', isPrimary: true, sortOrder: 0 },
@@ -286,7 +294,7 @@ export const products: Product[] = [
     material: 'Genuine leather',
     origin: 'Handcrafted in India',
     leadTimeDays: 7,
-    createdAt: new Date('2026-01-18T00:00:00.000Z'),
+    createdAt: daysAgo(61),
     updatedAt: now,
     images: [
       { id: 'img-8', url: 'https://images.unsplash.com/photo-1604176424472-9d2b268c5881?auto=format&fit=crop&w=1200&q=80', altText: 'Tangred Officer Belt', isPrimary: true, sortOrder: 0 },
@@ -310,7 +318,7 @@ export const products: Product[] = [
     material: 'Pebbled leather',
     origin: 'Handcrafted in India',
     leadTimeDays: 12,
-    createdAt: new Date('2026-03-08T00:00:00.000Z'),
+    createdAt: daysAgo(12),
     updatedAt: now,
     images: [
       { id: 'img-9', url: 'https://images.unsplash.com/photo-1581605405669-fcdf81165afa?auto=format&fit=crop&w=1200&q=80', altText: 'The Founder Satchel', isPrimary: true, sortOrder: 0 },
@@ -380,8 +388,8 @@ export const accountOrders: OrderType[] = [
     gst: 197982,
     shippingCharge: 0,
     total: 1297882,
-    paidAt: new Date('2026-03-12T12:00:00.000Z'),
-    createdAt: new Date('2026-03-12T11:45:00.000Z'),
+    paidAt: daysAgo(8, -12),
+    createdAt: daysAgo(8, -11, -45),
     items: [
       {
         id: 'order-item-1',
@@ -400,8 +408,8 @@ export const accountOrders: OrderType[] = [
     gst: 62982,
     shippingCharge: 0,
     total: 412882,
-    paidAt: new Date('2026-02-26T09:30:00.000Z'),
-    createdAt: new Date('2026-02-26T09:10:00.000Z'),
+    paidAt: daysAgo(22, -9, -30),
+    createdAt: daysAgo(22, -9, -10),
     items: [
       {
         id: 'order-item-2',
@@ -458,7 +466,7 @@ export const tanLeidaSessions: TanLeidaSessionType[] = [
     generatedImageUrl: 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=1200&q=80',
     recommendedProductId: 'prod-founder-satchel',
     estimatedDelivery: 'Ready in 12 working days from today',
-    createdAt: new Date('2026-03-18T08:00:00.000Z'),
+    createdAt: daysAgo(2, -8),
   },
 ]
 

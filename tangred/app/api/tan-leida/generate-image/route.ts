@@ -1,8 +1,19 @@
 import { NextResponse } from 'next/server'
+import { z } from 'zod'
+import { generateOutfitImage } from '@/lib/ai/image-gen'
 
-export async function POST() {
-  return NextResponse.json({
-    success: true,
-    generatedImageUrl: 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=1200&q=80',
-  })
+const schema = z.object({
+  baseUserPhoto: z.string().url(),
+  productName: z.string().min(1),
+  stylePrompt: z.string().min(1),
+})
+
+export async function POST(request: Request) {
+  try {
+    const payload = schema.parse(await request.json())
+    const image = await generateOutfitImage(payload)
+    return NextResponse.json({ success: true, image })
+  } catch (error) {
+    return NextResponse.json({ success: false, message: error instanceof Error ? error.message : 'Unable to generate image.' }, { status: 400 })
+  }
 }

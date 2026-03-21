@@ -6,7 +6,7 @@ import { formatDate } from '@/lib/format'
 const navItems = [
   { label: 'My Profile', href: '/account/profile' },
   { label: 'My Orders', href: '/orders' },
-  { label: 'My Wishlist', href: '/products' },
+  { label: 'My Wishlist', href: '/account/wishlist' },
   { label: 'Saved Addresses', href: '/account/addresses' },
   { label: 'Tan Leida™', href: '/account/tan-leida', special: true },
 ]

@@ -8,7 +8,8 @@ import { formatPrice } from '@/lib/format'
 import { useCartStore } from '@/store/cartStore'
 import { useUIStore } from '@/store/uiStore'
 
-const RECENT_PRODUCT_CUTOFF = new Date('2026-02-03T00:00:00.000Z').getTime()
+const RECENT_PRODUCT_WINDOW_DAYS = 45
+const RECENT_PRODUCT_CUTOFF = Date.now() - RECENT_PRODUCT_WINDOW_DAYS * 24 * 60 * 60 * 1000
 
 interface ProductCardProps {
   product: Product

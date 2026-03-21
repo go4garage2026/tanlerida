@@ -61,7 +61,7 @@ export function Navbar() {
             <button type="button" className="hidden p-1 text-[#A0A0A0] transition-luxury hover:text-[#F5F5F5] md:flex" aria-label="Search">
               <Search size={18} />
             </button>
-            <Link href="/account" className="hidden p-1 text-[#A0A0A0] transition-luxury hover:text-[#F5F5F5] md:flex" aria-label="Wishlist">
+            <Link href="/account/wishlist" className="hidden p-1 text-[#A0A0A0] transition-luxury hover:text-[#F5F5F5] md:flex" aria-label="Wishlist">
               <Heart size={18} />
             </Link>
             <button type="button" onClick={toggleCart} className="relative p-1 text-[#A0A0A0] transition-luxury hover:text-[#F5F5F5]" aria-label="Cart">

@@ -1,13 +1,18 @@
 import { NextResponse } from 'next/server'
+import { z } from 'zod'
+import { createRazorpayOrder } from '@/lib/razorpay'
 
-export async function POST() {
-  return NextResponse.json({
-    success: true,
-    order: {
-      id: 'order_RAZORPAY_SAMPLE_123',
-      amount: 11682,
-      currency: 'INR',
-      receipt: `TAN-${Date.now()}`,
-    },
-  })
+const schema = z.object({
+  amount: z.number().int().positive(),
+  receipt: z.string().optional(),
+})
+
+export async function POST(request: Request) {
+  try {
+    const payload = schema.parse(await request.json())
+    const order = await createRazorpayOrder(payload.amount, payload.receipt)
+    return NextResponse.json({ success: true, order })
+  } catch (error) {
+    return NextResponse.json({ success: false, message: error instanceof Error ? error.message : 'Unable to create payment order.' }, { status: 400 })
+  }
 }
