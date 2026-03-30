@@ -15,6 +15,10 @@ export function getRazorpayClient() {
   })
 }
 
+export function getRazorpayKeyId() {
+  return process.env.RAZORPAY_KEY_ID ?? ''
+}
+
 export async function createRazorpayOrder(amount: number, receipt = generateOrderNumber()) {
   const client = getRazorpayClient()
 
@@ -32,6 +36,10 @@ export async function createRazorpayOrder(amount: number, receipt = generateOrde
     currency: 'INR',
     receipt,
   })
+}
+
+export function isMockRazorpayOrder(orderId: string) {
+  return orderId.startsWith('mock_order_')
 }
 
 export function verifyRazorpaySignature(orderId: string, paymentId: string, signature: string) {

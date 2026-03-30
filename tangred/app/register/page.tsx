@@ -43,7 +43,7 @@ export default function RegisterPage() {
         return
       }
 
-      router.push('/login?registered=true')
+      router.push(`/verify?email=${encodeURIComponent(form.email)}&registered=true`)
     } catch {
       setError('Something went wrong. Please try again.')
     } finally {

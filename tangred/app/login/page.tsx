@@ -28,7 +28,11 @@ export default function LoginPage() {
       })
 
       if (result?.error) {
-        setError('Invalid email or password.')
+        setError(
+          result.error.includes('EMAIL_NOT_VERIFIED')
+            ? 'Verify your email before signing in.'
+            : 'Invalid email or password.',
+        )
       } else {
         router.push(callbackUrl)
         router.refresh()

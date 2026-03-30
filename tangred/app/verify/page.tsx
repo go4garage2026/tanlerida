@@ -7,6 +7,7 @@ export default function VerifyPage() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const email = searchParams.get('email') ?? ''
+  const justRegistered = searchParams.get('registered') === 'true'
   const [otp, setOtp] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
@@ -45,6 +46,12 @@ export default function VerifyPage() {
         <p className="mt-4 text-sm text-[#A0A0A0]">
           {email ? `We sent a verification code to ${email}.` : 'Enter the verification code sent to your email.'}
         </p>
+
+        {justRegistered && !error && (
+          <div className="mt-4 border border-[#BFA07A]/40 bg-[#BFA07A]/10 p-3 text-sm text-[#BFA07A]">
+            Your account has been created. Verify your email to activate sign-in.
+          </div>
+        )}
 
         {error && (
           <div className="mt-4 border border-[#C0392B]/40 bg-[#C0392B]/10 p-3 text-sm text-[#E74C3C]">{error}</div>

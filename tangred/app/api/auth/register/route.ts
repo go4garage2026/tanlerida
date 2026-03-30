@@ -15,37 +15,70 @@ const schema = z.object({
 export async function POST(request: Request) {
   try {
     const payload = schema.parse(await request.json())
-    const passwordHash = await bcrypt.hash(payload.password, 12)
-    const token = buildOtpToken()
-
-    const user = await prisma.user.upsert({
+    const existingUser = await prisma.user.findUnique({
       where: { email: payload.email },
-      update: {
-        name: payload.name,
-        phone: payload.phone,
-        passwordHash,
+      select: {
+        id: true,
         isVerified: true,
-      },
-      create: {
-        name: payload.name,
-        email: payload.email,
-        phone: payload.phone,
-        passwordHash,
-        isVerified: true,
+        googleId: true,
       },
     })
 
-    await prisma.emailVerificationToken.create({
-      data: {
-        userId: user.id,
-        tokenHash: token.tokenHash,
-        expiresAt: token.expiresAt,
-      },
+    if (existingUser?.isVerified) {
+      return NextResponse.json(
+        { success: false, message: 'An account with this email already exists. Please sign in instead.' },
+        { status: 409 },
+      )
+    }
+
+    if (existingUser?.googleId) {
+      return NextResponse.json(
+        { success: false, message: 'This email is already linked to Google sign-in. Continue with Google instead.' },
+        { status: 409 },
+      )
+    }
+
+    const passwordHash = await bcrypt.hash(payload.password, 12)
+    const token = buildOtpToken()
+    const user = await prisma.$transaction(async (tx) => {
+      const nextUser = await tx.user.upsert({
+        where: { email: payload.email },
+        update: {
+          name: payload.name,
+          phone: payload.phone,
+          passwordHash,
+          isVerified: false,
+        },
+        create: {
+          name: payload.name,
+          email: payload.email,
+          phone: payload.phone,
+          passwordHash,
+          isVerified: false,
+        },
+      })
+
+      await tx.emailVerificationToken.deleteMany({
+        where: {
+          userId: nextUser.id,
+          usedAt: null,
+        },
+      })
+
+      await tx.emailVerificationToken.create({
+        data: {
+          userId: nextUser.id,
+          tokenHash: token.tokenHash,
+          expiresAt: token.expiresAt,
+        },
+      })
+
+      return nextUser
     })
 
     await sendVerificationEmail(user.email, user.name ?? 'Client', token.otp, token.expiresAt)
 
-    return NextResponse.json({ success: true, userId: user.id })
+    return NextResponse.json({ success: true, userId: user.id, requiresVerification: true })
   } catch (error) {
     return NextResponse.json({ success: false, message: error instanceof Error ? error.message : 'Unable to register.' }, { status: 400 })
   }
