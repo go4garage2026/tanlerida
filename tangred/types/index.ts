@@ -145,11 +145,11 @@ export interface TanLeridaSessionType {
   sessionCode: string
   isPaid: boolean
   status: TanLeridaStatus
-  userPhotos?: Record<string, string>
-  bodyProfile?: Record<string, unknown>
-  stylePreferences?: Record<string, unknown>
-  aiAnalysis?: Record<string, unknown>
-  recommendation?: Record<string, unknown>
+  userPhotos?: Record<string, string> | null
+  bodyProfile?: Record<string, unknown> | null
+  stylePreferences?: Record<string, unknown> | null
+  aiAnalysis?: Record<string, unknown> | null
+  recommendation?: Record<string, unknown> | null
   generatedImageUrl?: string | null
   recommendedProductId?: string | null
   estimatedDelivery?: string | null

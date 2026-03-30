@@ -1,13 +1,14 @@
 import { prisma } from '@/lib/prisma'
 import { formatDeliveryEstimate } from '@/lib/utils/date'
-import { generateTanLeridaSessionCode } from '@/lib/utils/ids'
+import { generateTanLeridaId, generateTanLeridaSessionCode } from '@/lib/utils/ids'
+import type { TanLeridaStatus } from '@/types'
 
 export type RuntimeSession = {
   id: string
   ownerId: string
   sessionCode: string
   isPaid: boolean
-  status: string
+  status: TanLeridaStatus
   userPhotos?: Record<string, string> | null
   bodyProfile?: Record<string, unknown> | null
   stylePreferences?: Record<string, unknown> | null
@@ -42,7 +43,7 @@ function toRuntime(row: {
     ownerId: row.userId,
     sessionCode: row.sessionCode,
     isPaid: row.isPaid,
-    status: row.status,
+    status: row.status as TanLeridaStatus,
     userPhotos: (row.userPhotos as Record<string, string>) ?? null,
     bodyProfile: (row.bodyProfile as Record<string, unknown>) ?? null,
     stylePreferences: (row.stylePreferences as Record<string, unknown>) ?? null,
@@ -70,12 +71,16 @@ export async function getTanLeridaSession(sessionId: string) {
   return row ? toRuntime(row) : null
 }
 
-export async function createTanLeridaSession(ownerId: string) {
+export async function createTanLeridaSession(
+  ownerId: string,
+  options?: { isPaid?: boolean; paymentId?: string | null },
+) {
   const row = await prisma.tanLeridaSession.create({
     data: {
       userId: ownerId,
       sessionCode: generateTanLeridaSessionCode(),
-      isPaid: true,
+      paymentId: options?.paymentId ?? null,
+      isPaid: options?.isPaid ?? false,
       status: 'INITIATED',
     },
   })
@@ -114,4 +119,55 @@ export async function completeTanLeridaSession(sessionId: string) {
     },
   })
   return toRuntime(row)
+}
+
+export async function markTanLeridaSessionPaid(sessionId: string, razorpayPayId?: string) {
+  const result = await prisma.$transaction(async (tx) => {
+    const session = await tx.tanLeridaSession.findUnique({
+      where: { id: sessionId },
+      include: { user: true, payment: true },
+    })
+
+    if (!session) {
+      throw new Error('Session not found.')
+    }
+
+    const tanLeridaId = session.user.TanLeridaId ?? generateTanLeridaId()
+
+    if (session.paymentId) {
+      await tx.tanLeridaPayment.update({
+        where: { id: session.paymentId },
+        data: {
+          status: 'paid',
+          razorpayPayId: razorpayPayId ?? session.payment?.razorpayPayId ?? null,
+        },
+      })
+    }
+
+    await tx.user.update({
+      where: { id: session.userId },
+      data: {
+        TanLeridaAccess: true,
+        TanLeridaId: tanLeridaId,
+      },
+    })
+
+    const updatedSession = await tx.tanLeridaSession.update({
+      where: { id: sessionId },
+      data: {
+        isPaid: true,
+      },
+    })
+
+    return {
+      session: toRuntime(updatedSession),
+      user: {
+        email: session.user.email,
+        name: session.user.name,
+        tanLeridaId,
+      },
+    }
+  })
+
+  return result
 }

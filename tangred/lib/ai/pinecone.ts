@@ -1,7 +1,10 @@
 import { Pinecone } from '@pinecone-database/pinecone'
+import { GoogleGenerativeAI } from '@google/generative-ai'
 import { isConfigured } from '@/lib/utils/guards'
 
 const indexName = process.env.PINECONE_INDEX_NAME ?? 'tangred-products'
+const EMBEDDING_MODEL = 'text-embedding-004'
+const EMBEDDING_DIMENSION = 768
 
 function getClient() {
   if (!isConfigured(process.env.PINECONE_API_KEY)) {
@@ -11,6 +14,47 @@ function getClient() {
   return new Pinecone({ apiKey: process.env.PINECONE_API_KEY as string })
 }
 
+function getEmbeddingClient() {
+  if (!isConfigured(process.env.GOOGLE_GEMINI_API_KEY)) return null
+  return new GoogleGenerativeAI(process.env.GOOGLE_GEMINI_API_KEY as string)
+}
+
+async function generateEmbedding(text: string): Promise<number[] | null> {
+  const client = getEmbeddingClient()
+  if (!client) return null
+
+  const model = client.getGenerativeModel({ model: EMBEDDING_MODEL })
+  const result = await model.embedContent(text)
+  return result.embedding.values
+}
+
+function buildProfileText(params: {
+  bodyProfile: Record<string, unknown>
+  stylePrefs: Record<string, unknown>
+  geminiAnalysis: Record<string, unknown>
+}): string {
+  const parts: string[] = []
+
+  const { bodyProfile, stylePrefs, geminiAnalysis } = params
+
+  if (bodyProfile.gender) parts.push(`gender: ${bodyProfile.gender}`)
+  if (bodyProfile.bodyBuild) parts.push(`build: ${bodyProfile.bodyBuild}`)
+  if (bodyProfile.skinTone) parts.push(`skin tone: ${bodyProfile.skinTone}`)
+  if (bodyProfile.resonance) parts.push(`style resonance: ${Array.isArray(bodyProfile.resonance) ? bodyProfile.resonance.join(', ') : bodyProfile.resonance}`)
+
+  if (stylePrefs.need) parts.push(`looking for: ${stylePrefs.need}`)
+  if (stylePrefs.budget) parts.push(`budget: ${stylePrefs.budget}`)
+  if (stylePrefs.occasion) parts.push(`occasion: ${stylePrefs.occasion}`)
+  if (stylePrefs.colours) parts.push(`colour preference: ${stylePrefs.colours}`)
+
+  if (geminiAnalysis.bodyShape) parts.push(`body shape: ${geminiAnalysis.bodyShape}`)
+  if (geminiAnalysis.undertone) parts.push(`undertone: ${geminiAnalysis.undertone}`)
+  if (geminiAnalysis.styleSensibility) parts.push(`style sensibility: ${geminiAnalysis.styleSensibility}`)
+  if (geminiAnalysis.colourBias) parts.push(`colour bias: ${Array.isArray(geminiAnalysis.colourBias) ? geminiAnalysis.colourBias.join(', ') : geminiAnalysis.colourBias}`)
+
+  return parts.join('. ') || 'premium leather product recommendation'
+}
+
 export async function matchProductsFromEmbeddings(params: {
   bodyProfile: Record<string, unknown>
   stylePrefs: Record<string, unknown>
@@ -18,14 +62,15 @@ export async function matchProductsFromEmbeddings(params: {
   topK: number
 }) {
   const client = getClient()
+  if (!client) return []
 
-  if (!client) {
-    return []
-  }
+  const queryText = buildProfileText(params)
+  const embedding = await generateEmbedding(queryText)
+  if (!embedding) return []
 
   const index = client.index(indexName)
   const response = await index.query({
-    vector: new Array(1536).fill(0),
+    vector: embedding.length === EMBEDDING_DIMENSION ? embedding : embedding.slice(0, EMBEDDING_DIMENSION),
     topK: params.topK,
     includeMetadata: true,
   })
@@ -39,17 +84,24 @@ export async function upsertProductEmbedding(params: {
   category: string
   material: string
   tags: string[]
-  embedding: number[]
+  embedding?: number[]
 }) {
   const client = getClient()
   if (!client) return
+
+  let embedding = params.embedding
+  if (!embedding || embedding.length === 0) {
+    const text = `${params.productName}. Category: ${params.category}. Material: ${params.material}. Tags: ${params.tags.join(', ')}`
+    embedding = (await generateEmbedding(text)) ?? undefined
+    if (!embedding) return
+  }
 
   const index = client.index(indexName)
   await index.upsert({
     records: [
       {
         id: params.productId,
-        values: params.embedding,
+        values: embedding,
         metadata: {
           name: params.productName,
           category: params.category,

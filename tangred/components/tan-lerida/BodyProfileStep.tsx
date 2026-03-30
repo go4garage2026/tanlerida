@@ -14,7 +14,24 @@ interface BodyProfileStepProps {
   loading: boolean
 }
 
+const genderOptions = ['Male', 'Female', 'Non-binary', 'Prefer not to say']
+const bodyBuildOptions = ['Slim', 'Athletic', 'Regular', 'Broad', 'Plus']
+const ageRangeOptions = ['18-24', '25-30', '31-35', '36-40', '41-50', '51-60', '60+']
+const skinToneOptions = ['Very fair', 'Fair', 'Light medium', 'Warm medium', 'Olive', 'Wheat', 'Tan', 'Deep brown', 'Dark']
 const resonanceOptions = ['Classic Professional', 'Contemporary Smart', 'Traditional Indian', 'Minimalist', 'Bold Statement']
+
+function SelectField({ label, value, options, onChange }: { label: string; value: string; options: string[]; onChange: (v: string) => void }) {
+  return (
+    <div>
+      <label className="mb-2 block text-xs uppercase tracking-[0.18em] text-[#A0A0A0]">{label}</label>
+      <select className="input-luxury w-full appearance-none" value={value} onChange={(e) => onChange(e.target.value)}>
+        {options.map((opt) => (
+          <option key={opt} value={opt}>{opt}</option>
+        ))}
+      </select>
+    </div>
+  )
+}
 
 export function BodyProfileStep({ values, onChange, onSubmit, loading }: BodyProfileStepProps) {
   const toggleResonance = (value: string) => {
@@ -28,11 +45,16 @@ export function BodyProfileStep({ values, onChange, onSubmit, loading }: BodyPro
   return (
     <div className="space-y-5">
       <div className="grid gap-4 md:grid-cols-2">
-        <input className="input-luxury" value={values.gender} onChange={(event) => onChange('gender', event.target.value)} placeholder="Gender" />
-        <input className="input-luxury" value={values.ageRange} onChange={(event) => onChange('ageRange', event.target.value)} placeholder="Age range" />
-        <input className="input-luxury" value={values.heightCm} onChange={(event) => onChange('heightCm', Number(event.target.value))} placeholder="Height in cm" type="number" />
-        <input className="input-luxury" value={values.bodyBuild} onChange={(event) => onChange('bodyBuild', event.target.value)} placeholder="Body build" />
-        <input className="input-luxury md:col-span-2" value={values.skinTone} onChange={(event) => onChange('skinTone', event.target.value)} placeholder="Skin tone" />
+        <SelectField label="Gender" value={values.gender} options={genderOptions} onChange={(v) => onChange('gender', v)} />
+        <SelectField label="Age range" value={values.ageRange} options={ageRangeOptions} onChange={(v) => onChange('ageRange', v)} />
+        <div>
+          <label className="mb-2 block text-xs uppercase tracking-[0.18em] text-[#A0A0A0]">Height (cm)</label>
+          <input className="input-luxury w-full" value={values.heightCm} onChange={(event) => onChange('heightCm', Number(event.target.value))} placeholder="Height in cm" type="number" min={120} max={230} />
+        </div>
+        <SelectField label="Body build" value={values.bodyBuild} options={bodyBuildOptions} onChange={(v) => onChange('bodyBuild', v)} />
+        <div className="md:col-span-2">
+          <SelectField label="Skin tone" value={values.skinTone} options={skinToneOptions} onChange={(v) => onChange('skinTone', v)} />
+        </div>
       </div>
       <div>
         <p className="mb-3 text-xs uppercase tracking-[0.18em] text-[#A0A0A0]">Style resonance</p>
