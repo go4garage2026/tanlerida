@@ -1,6 +1,6 @@
 import crypto from 'crypto'
 import Razorpay from 'razorpay'
-import { TAN_Lerida_TOTAL_PAISE } from '@/lib/utils/currency'
+import { TAN_LERIDA_TOTAL_PAISE } from '@/lib/utils/currency'
 import { generateOrderNumber } from '@/lib/utils/ids'
 import { isConfigured } from '@/lib/utils/guards'
 
@@ -54,8 +54,10 @@ export function verifyRazorpaySignature(orderId: string, paymentId: string, sign
 
 export function getTanLeridaPaymentBreakdown() {
   return {
-    subtotal: TAN_Lerida_TOTAL_PAISE - 1782,
+    subtotal: TAN_LERIDA_TOTAL_PAISE - 1782,
     gst: 1782,
-    total: TAN_Lerida_TOTAL_PAISE,
+    total: TAN_LERIDA_TOTAL_PAISE,
   }
 }
+
+export const getTanLeidaPaymentBreakdown = getTanLeridaPaymentBreakdown

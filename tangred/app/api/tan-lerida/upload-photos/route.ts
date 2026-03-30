@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server'
 import { z } from 'zod'
 import { validatePhotoWithGemini } from '@/lib/ai/gemini'
 import { getCurrentUserIdOrDemo } from '@/lib/request-auth'
-import { getTanLeridaSession, updateTanLeridaSession } from '@/lib/tan-lerida-store'
+import { getTanLeridaSession, updateTanLeridaSession } from '@/lib/tan-leida-store'
 
 const payloadSchema = z.object({
   sessionId: z.string().min(1),

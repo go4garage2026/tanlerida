@@ -422,7 +422,7 @@ export const accountOrders: OrderType[] = [
   },
 ]
 
-export const TanLeridaSessions: TanLeridaSessionType[] = [
+export const tanLeridaSessions: TanLeridaSessionType[] = [
   {
     id: 'session-1',
     sessionCode: 'TL-AB3K7M2P',
@@ -470,7 +470,7 @@ export const TanLeridaSessions: TanLeridaSessionType[] = [
   },
 ]
 
-export const TanLeridaFaqs = [
+export const tanLeridaFaqs = [
   {
     question: 'What does the ₹99 + GST consultation include?',
     answer: 'You receive a guided consultation, profile analysis, Tangred product matching, and a generated visual recommendation with pricing and delivery guidance.',
@@ -489,7 +489,7 @@ export const TanLeridaFaqs = [
   },
 ]
 
-export const TanLeridaSteps = [
+export const tanLeridaSteps = [
   {
     id: 'step-1',
     title: 'Upload Photos',
@@ -539,3 +539,10 @@ export function getProductsByCategory(slug?: string) {
 export function getRelatedProducts(product: Product) {
   return products.filter((item) => item.categoryId === product.categoryId && item.id !== product.id).slice(0, 3)
 }
+
+export const tanLeidaSessions = tanLeridaSessions
+export const tanLeidaFaqs = tanLeridaFaqs
+export const tanLeidaSteps = tanLeridaSteps
+export const TanLeridaSessions = tanLeridaSessions
+export const TanLeridaFaqs = tanLeridaFaqs
+export const TanLeridaSteps = tanLeridaSteps

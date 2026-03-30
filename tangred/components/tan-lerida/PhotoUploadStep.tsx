@@ -17,7 +17,7 @@ const slots = [
   ['ethnic', 'Ethnic / Traditional Look (optional)'],
 ] as const
 
-function PhotoSlot({ slotKey, label, value, onChange }: { slotKey: string; label: string; value: string; onChange: (url: string) => void }) {
+function PhotoSlot({ label, value, onChange }: { label: string; value: string; onChange: (url: string) => void }) {
   const inputRef = useRef<HTMLInputElement>(null)
   const [uploading, setUploading] = useState(false)
   const [dragOver, setDragOver] = useState(false)
@@ -87,7 +87,7 @@ export function PhotoUploadStep({ values, onChange, onSubmit, loading }: PhotoUp
     <div className="space-y-5">
       <div className="grid gap-4 md:grid-cols-2">
         {slots.map(([key, label]) => (
-          <PhotoSlot key={key} slotKey={key} label={label} value={values[key] ?? ''} onChange={(url) => onChange(key, url)} />
+          <PhotoSlot key={key} label={label} value={values[key] ?? ''} onChange={(url) => onChange(key, url)} />
         ))}
       </div>
       <div className="rounded-sm border border-[#2A2A2A] bg-black/20 p-4 text-sm text-[#A0A0A0]">

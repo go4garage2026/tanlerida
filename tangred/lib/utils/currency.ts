@@ -1,5 +1,8 @@
-export const TAN_Lerida_TOTAL_PAISE = 11682
+export const TAN_LERIDA_TOTAL_PAISE = 11682
 export const GST_RATE = 0.18
+
+export const TAN_LEIDA_TOTAL_PAISE = TAN_LERIDA_TOTAL_PAISE
+export const TAN_Lerida_TOTAL_PAISE = TAN_LERIDA_TOTAL_PAISE
 
 export function formatPaise(value: number) {
   return new Intl.NumberFormat('en-IN', {

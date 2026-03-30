@@ -1,5 +1,5 @@
 import { prisma } from '@/lib/prisma'
-import { updateTanLeridaSession, completeTanLeridaSession, getTanLeridaSession } from '@/lib/tan-lerida-store'
+import { updateTanLeridaSession, completeTanLeridaSession, getTanLeridaSession } from '@/lib/tan-leida-store'
 import { analysePhotosWithGemini } from '@/lib/ai/gemini'
 import { claudeGenerateRecommendation } from '@/lib/ai/claude'
 import { generateOutfitImage } from '@/lib/ai/image-gen'
@@ -146,3 +146,5 @@ export async function runTanLeridaPipeline(sessionId: string) {
     }).catch(() => {})
   }
 }
+
+export const runTanLeidaPipeline = runTanLeridaPipeline

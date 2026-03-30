@@ -62,11 +62,11 @@ export function sendOrderConfirmationEmail(to: string, name: string, orderNumber
   })
 }
 
-export function sendTanLeridaAccessEmail(to: string, name: string, TanLeridaId: string) {
+export function sendTanLeridaAccessEmail(to: string, name: string, tanLeridaId: string) {
   return sendEmail({
     to,
-    subject: `Tan Lerida access confirmed — ${TanLeridaId}`,
-    html: frameEmail('Tan Lerida access confirmed', `<p>Dear ${name},</p><p>Your Tan Lerida access ID is <strong style="color:#C0392B;letter-spacing:0.2em;">${TanLeridaId}</strong>.</p>`),
+    subject: `Tan Lerida access confirmed — ${tanLeridaId}`,
+    html: frameEmail('Tan Lerida access confirmed', `<p>Dear ${name},</p><p>Your Tan Lerida access ID is <strong style="color:#C0392B;letter-spacing:0.2em;">${tanLeridaId}</strong>.</p>`),
   })
 }
 
@@ -77,3 +77,6 @@ export function sendTanLeridaCompletionEmail(to: string, name: string, sessionCo
     html: frameEmail('Your Tan Lerida session is ready', `<p>Dear ${name},</p><p>Your bespoke recommendation for session <strong style="color:#C0392B;">${sessionCode}</strong> is ready in your Tangred account.</p>`),
   })
 }
+
+export const sendTanLeidaAccessEmail = sendTanLeridaAccessEmail
+export const sendTanLeidaCompletionEmail = sendTanLeridaCompletionEmail

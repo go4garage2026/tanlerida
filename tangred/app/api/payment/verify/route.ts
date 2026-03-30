@@ -3,13 +3,14 @@ import { z } from 'zod'
 import { prisma } from '@/lib/prisma'
 import { verifyRazorpaySignature } from '@/lib/razorpay'
 import { sendTanLeridaAccessEmail } from '@/lib/resend'
-import { markTanLeridaSessionPaid } from '@/lib/tan-lerida-store'
+import { markTanLeridaSessionPaid } from '@/lib/tan-leida-store'
 
 const schema = z.object({
   orderId: z.string().min(1),
   paymentId: z.string().min(1),
   signature: z.string().min(1),
   tanLeridaSessionId: z.string().min(1).optional(),
+  tanLeidaSessionId: z.string().min(1).optional(),
 })
 
 export async function POST(request: Request) {
@@ -21,9 +22,11 @@ export async function POST(request: Request) {
       return NextResponse.json({ success: false, message: 'Invalid Razorpay signature.' }, { status: 400 })
     }
 
-    if (payload.tanLeridaSessionId) {
-      const session = await prisma.tanLeridaSession.findUnique({
-        where: { id: payload.tanLeridaSessionId },
+    const sessionId = payload.tanLeridaSessionId ?? payload.tanLeidaSessionId
+
+    if (sessionId) {
+      const session = await prisma.tanLeidaSession.findUnique({
+        where: { id: sessionId },
         select: {
           id: true,
           payment: {
@@ -38,9 +41,9 @@ export async function POST(request: Request) {
         return NextResponse.json({ success: false, message: 'Tan Lerida payment record not found.' }, { status: 404 })
       }
 
-      const paid = await markTanLeridaSessionPaid(payload.tanLeridaSessionId, payload.paymentId)
+      const paid = await markTanLeridaSessionPaid(sessionId, payload.paymentId)
       if (paid.user.email) {
-        void sendTanLeridaAccessEmail(paid.user.email, paid.user.name ?? 'Client', paid.user.tanLeridaId)
+        void sendTanLeridaAccessEmail(paid.user.email, paid.user.name ?? 'Client', paid.user.tanLeidaId)
       }
 
       return NextResponse.json({ success: true, verified, session: paid.session })

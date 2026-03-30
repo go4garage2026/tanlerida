@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { z } from 'zod'
 import { getCurrentUserIdOrDemo } from '@/lib/request-auth'
-import { getTanLeridaSession } from '@/lib/tan-lerida-store'
+import { getTanLeridaSession } from '@/lib/tan-leida-store'
 
 const schema = z.object({ sessionId: z.string().min(1) })
 

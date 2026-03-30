@@ -5,7 +5,7 @@ import { prisma } from '@/lib/prisma'
 import { createRazorpayOrder, getRazorpayKeyId, getTanLeridaPaymentBreakdown, isMockRazorpayOrder } from '@/lib/razorpay'
 import { enforceRateLimit } from '@/lib/rate-limit'
 import { sendTanLeridaAccessEmail } from '@/lib/resend'
-import { createTanLeridaSession, listTanLeridaSessions, markTanLeridaSessionPaid, updateTanLeridaSession } from '@/lib/tan-lerida-store'
+import { createTanLeridaSession, listTanLeridaSessions, markTanLeridaSessionPaid, updateTanLeridaSession } from '@/lib/tan-leida-store'
 import { getRequestIp } from '@/lib/utils/guards'
 
 const createSchema = z.object({
@@ -27,7 +27,7 @@ export async function POST(request: Request) {
     const breakdown = getTanLeridaPaymentBreakdown()
     const paymentOrder = await createRazorpayOrder(breakdown.total)
 
-    const payment = await prisma.tanLeridaPayment.create({
+    const payment = await prisma.tanLeidaPayment.create({
       data: {
         userId,
         razorpayOrderId: paymentOrder.id,
@@ -46,7 +46,7 @@ export async function POST(request: Request) {
     if (isMockRazorpayOrder(paymentOrder.id)) {
       const paid = await markTanLeridaSessionPaid(updated.id, `mock_pay_${Date.now()}`)
       if (paid.user.email) {
-        void sendTanLeridaAccessEmail(paid.user.email, paid.user.name ?? 'Client', paid.user.tanLeridaId)
+        void sendTanLeridaAccessEmail(paid.user.email, paid.user.name ?? 'Client', paid.user.tanLeidaId)
       }
 
       return NextResponse.json({

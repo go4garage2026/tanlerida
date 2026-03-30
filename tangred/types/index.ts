@@ -3,6 +3,10 @@ import 'next-auth'
 declare module 'next-auth' {
   interface User {
     id: string
+    tanLeridaAccess?: boolean
+    tanLeridaId?: string | null
+    tanLeidaAccess?: boolean
+    tanLeidaId?: string | null
     TanLeridaAccess?: boolean
     TanLeridaId?: string | null
   }
@@ -10,11 +14,23 @@ declare module 'next-auth' {
   interface Session {
     user: User & {
       id: string
+      tanLeridaAccess: boolean
+      tanLeridaId: string | null
+      tanLeidaAccess: boolean
+      tanLeidaId: string | null
       TanLeridaAccess: boolean
       TanLeridaId: string | null
     }
   }
 }
+
+export type TanLeridaStatus =
+  | 'INITIATED'
+  | 'PHOTOS_UPLOADED'
+  | 'PROFILE_COLLECTED'
+  | 'ANALYSING'
+  | 'RECOMMENDATION_READY'
+  | 'COMPLETED'
 
 export interface Product {
   id: string
@@ -132,14 +148,6 @@ export type OrderStatus =
   | 'CANCELLED'
   | 'REFUNDED'
 
-export type TanLeridaStatus =
-  | 'INITIATED'
-  | 'PHOTOS_UPLOADED'
-  | 'PROFILE_COLLECTED'
-  | 'ANALYSING'
-  | 'RECOMMENDATION_READY'
-  | 'COMPLETED'
-
 export interface TanLeridaSessionType {
   id: string
   sessionCode: string
@@ -155,6 +163,9 @@ export interface TanLeridaSessionType {
   estimatedDelivery?: string | null
   createdAt: Date
 }
+
+export type TanLeidaStatus = TanLeridaStatus
+export type TanLeidaSessionType = TanLeridaSessionType
 
 export interface Testimonial {
   id: string

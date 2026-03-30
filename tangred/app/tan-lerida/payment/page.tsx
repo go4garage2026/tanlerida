@@ -3,7 +3,7 @@
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { formatPrice } from '@/lib/format'
-import { TAN_Lerida_TOTAL_PAISE } from '@/lib/utils/currency'
+import { TAN_LERIDA_TOTAL_PAISE } from '@/lib/utils/currency'
 
 declare global {
   interface Window {
@@ -78,6 +78,7 @@ export default function TanLeridaPaymentPage() {
             paymentId: paymentResponse.razorpay_payment_id,
             signature: paymentResponse.razorpay_signature,
             tanLeridaSessionId: data.session.id,
+            tanLeidaSessionId: data.session.id,
           }),
         })
         const verifyData = await verifyResponse.json()
@@ -110,7 +111,7 @@ export default function TanLeridaPaymentPage() {
         <div className="mt-8 grid gap-4 md:grid-cols-3">
           <div className="border border-[#2A2A2A] p-5"><p className="text-sm text-[#A0A0A0]">Base Price</p><p className="mt-2 font-display text-3xl">₹99.00</p></div>
           <div className="border border-[#2A2A2A] p-5"><p className="text-sm text-[#A0A0A0]">GST</p><p className="mt-2 font-display text-3xl">₹17.82</p></div>
-          <div className="border border-[#C0392B] p-5"><p className="text-sm text-[#A0A0A0]">Total</p><p className="mt-2 font-display text-3xl text-[#C0392B]">{formatPrice(TAN_Lerida_TOTAL_PAISE)}</p></div>
+          <div className="border border-[#C0392B] p-5"><p className="text-sm text-[#A0A0A0]">Total</p><p className="mt-2 font-display text-3xl text-[#C0392B]">{formatPrice(TAN_LERIDA_TOTAL_PAISE)}</p></div>
         </div>
         <div className="mt-8 rounded-sm border border-[#2A2A2A] bg-black/20 p-4 text-sm text-[#A0A0A0]">
           By continuing, you confirm you have explicit consent to use uploaded likenesses for styling analysis and generated visual outputs.

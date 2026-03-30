@@ -17,8 +17,8 @@ model User {
   avatarUrl        String?
   phone            String?
   isVerified       Boolean              @default(false)
-  TanLeridaAccess   Boolean              @default(false)
-  TanLeridaId       String?              @unique
+  tanLeidaAccess   Boolean              @default(false) @map("TanLeridaAccess")
+  tanLeidaId       String?              @unique @map("TanLeridaId")
   createdAt        DateTime             @default(now())
   updatedAt        DateTime             @updatedAt
 
@@ -28,8 +28,8 @@ model User {
   orders           Order[]
   cart             Cart?
   wishlist         Wishlist[]
-  TanLeridaSessions TanLeridaSession[]
-  TanLeridaPayments TanLeridaPayment[]
+  tanLeidaSessions TanLeidaSession[]
+  tanLeidaPayments TanLeidaPayment[]
   reviews          Review[]
   verificationTokens EmailVerificationToken[]
   passwordResetTokens PasswordResetToken[]
@@ -143,7 +143,7 @@ model Product {
   wishlist                  Wishlist[]
   reviews                   Review[]
   tags                      ProductTag[]
-  recommendedInSessions     TanLeridaSession[] @relation("TanLeridaRecommendedProduct")
+  recommendedInTanLeidaSessions TanLeidaSession[] @relation("TanLeidaRecommendedProduct")
 }
 
 model ProductImage {
@@ -272,13 +272,13 @@ model Review {
   product    Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
 }
 
-model TanLeridaSession {
+model TanLeidaSession {
   id                   String         @id @default(cuid())
   userId               String
   sessionCode          String         @unique
   paymentId            String?
   isPaid               Boolean        @default(false)
-  status               TanLeridaStatus @default(INITIATED)
+  status               TanLeidaStatus @default(INITIATED)
   userPhotos           Json?
   bodyProfile          Json?
   stylePreferences     Json?
@@ -290,20 +290,24 @@ model TanLeridaSession {
   createdAt            DateTime       @default(now())
   updatedAt            DateTime       @updatedAt
   user                 User           @relation(fields: [userId], references: [id], onDelete: Cascade)
-  payment              TanLeridaPayment? @relation(fields: [paymentId], references: [id], onDelete: SetNull)
-  recommendedProduct   Product?       @relation("TanLeridaRecommendedProduct", fields: [recommendedProductId], references: [id], onDelete: SetNull)
+  payment              TanLeidaPayment? @relation(fields: [paymentId], references: [id], onDelete: SetNull)
+  recommendedProduct   Product?       @relation("TanLeidaRecommendedProduct", fields: [recommendedProductId], references: [id], onDelete: SetNull)
+
+  @@map("TanLeridaSession")
 }
 
-enum TanLeridaStatus {
+enum TanLeidaStatus {
   INITIATED
   PHOTOS_UPLOADED
   PROFILE_COLLECTED
   ANALYSING
   RECOMMENDATION_READY
   COMPLETED
+
+  @@map("TanLeridaStatus")
 }
 
-model TanLeridaPayment {
+model TanLeidaPayment {
   id              String            @id @default(cuid())
   userId          String
   razorpayOrderId String            @unique
@@ -314,5 +318,7 @@ model TanLeridaPayment {
   createdAt       DateTime          @default(now())
   updatedAt       DateTime          @updatedAt
   user            User              @relation(fields: [userId], references: [id], onDelete: Cascade)
-  sessions        TanLeridaSession[]
+  sessions        TanLeidaSession[]
+
+  @@map("TanLeridaPayment")
 }

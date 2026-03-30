@@ -1,11 +1,15 @@
 import type { NextConfig } from 'next'
 
+const isFirebaseStaticBuild = process.env.DEPLOY_TARGET === 'firebase-static'
+
 const nextConfig: NextConfig = {
-  // Full-stack SSR mode (API routes + server components)
-  output: 'standalone',
+  // Use a static export when preparing the Firebase frontend deployment.
+  output: isFirebaseStaticBuild ? 'export' : 'standalone',
+  distDir: isFirebaseStaticBuild ? 'dist' : '.next',
+  trailingSlash: isFirebaseStaticBuild,
 
   images: {
-    unoptimized: true,
+    unoptimized: isFirebaseStaticBuild || true,
     remotePatterns: [
       { protocol: 'https', hostname: 'images.unsplash.com' },
       { protocol: 'https', hostname: 'res.cloudinary.com' },
