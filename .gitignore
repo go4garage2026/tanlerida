@@ -134,3 +134,6 @@ temp/
 
 # Firebase
 .firebase/
+
+# Local AI workspace settings
+.claude/settings.local.json
