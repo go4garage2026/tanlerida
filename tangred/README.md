@@ -1,6 +1,6 @@
-# 🎩 Tangred Application
+# Tangred Application
 
-This is the main Next.js application for the Tangred e-commerce platform.
+This directory contains the only active application runtime in the repository: the full-stack Next.js storefront, API layer, auth flow, Prisma schema, and Tan Lerida experience.
 
 ## 🚀 Quick Start
 
@@ -46,12 +46,11 @@ public/           # Static assets
 types/            # TypeScript type definitions
 ```
 
-## 🔗 Related Documentation
+## Related Documentation
 
-- [Root README](../README.md) - Project overview
-- [Architecture](../docs/ARCHITECTURE.md) - System design
-- [API Docs](../docs/API.md) - API endpoints
-- [Deployment](../docs/DEPLOYMENT.md) - Deployment guide
+- [Root README](../README.md) - repository overview
+- [Repo Structure](../docs/REPO_STRUCTURE.md) - canonical layout
+- [Deployment](../docs/DEPLOYMENT.md) - deployment target and commands
 
 ---
 
