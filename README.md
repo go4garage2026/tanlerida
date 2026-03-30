@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="https://raw.githubusercontent.com/G4G-EKA-Ai/TANLERIDA/main/assets/tangred-logo.svg" alt="Tangred Logo" width="200"/>
+<img src="tangred-hero.png" alt="Tangred Hero" width="600"/>
 
 # 🎩 TANLERIDA
 
@@ -11,9 +11,9 @@
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind%20CSS-4.0-38B2AC?logo=tailwind-css)](https://tailwindcss.com/)
 [![Prisma](https://img.shields.io/badge/Prisma-7.5.0-2D3748?logo=prisma)](https://www.prisma.io/)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-14+-336791?logo=postgresql)](https://www.postgresql.org/)
-[![Vercel](https://img.shields.io/badge/Vercel-Deployed-black?logo=vercel)](https://vercel.com)
+[![Firebase](https://img.shields.io/badge/Firebase-Hosting-FFCA28?logo=firebase)](https://firebase.google.com/)
 
-**🌐 Live Demo**: [https://tangred.vercel.app](https://tangred.vercel.app) *(Coming Soon)*
+**🌐 Live**: [https://tanlerida-prod.web.app](https://tanlerida-prod.web.app)
 
 </div>
 
@@ -75,11 +75,12 @@ Tan Lerida is an innovative AI-powered styling consultant that helps customers f
 ### How It Works
 
 ```
-Step 1: Upload Photos → Gemini Vision AI analyzes body type & skin tone
-Step 2: Answer Preferences → Claude AI understands style requirements  
-Step 3: AI Analysis → Vector search finds matching products in catalog
-Step 4: Generate Visualization → See yourself wearing recommended items
-Step 5: Complete Purchase → Checkout with personalized recommendations
+Step 1: Upload Photos     → GPT-4o Vision / Gemini analyzes body type & skin tone
+Step 2: Body Profile      → Select gender, build, age range, skin tone
+Step 3: Style Preferences → Choose occasion, budget, style, and color preferences
+Step 4: AI Analysis       → Smart product matching via embeddings + vector search
+Step 5: Recommendations   → GPT-4o / Claude generates personalized styling advice
+Step 6: Visualization     → AI-generated image of you in recommended products
 ```
 
 ### Pricing
@@ -117,11 +118,12 @@ Step 5: Complete Purchase → Checkout with personalized recommendations
 
 | Feature | Technology | Status |
 |---------|------------|--------|
-| 👁️ **Vision Analysis** | Google Gemini 1.5 Pro Vision | ✅ |
-| 💬 **Recommendations** | Anthropic Claude Sonnet | ✅ |
-| 🖼️ **Image Generation** | Stable Diffusion / Replicate API | ✅ |
-| 🔍 **Vector Search** | Pinecone semantic search | ✅ |
-| 🧠 **Orchestration** | LangChain.js multi-agent pipeline | ✅ |
+| 👁️ **Vision Analysis** | GitHub Models GPT-4o / Google Gemini | ✅ |
+| 💬 **Recommendations** | GitHub Models GPT-4o / Anthropic Claude | ✅ |
+| 🖼️ **Image Generation** | Replicate API (Stable Diffusion) | ✅ |
+| 🔍 **Vector Search** | Pinecone + text-embedding-3-small | ✅ |
+| 🧠 **Orchestration** | Custom multi-step AI pipeline | ✅ |
+| 🔄 **Fallback Chain** | GitHub Models → Native API → Dev mocks | ✅ |
 
 ---
 
@@ -153,10 +155,11 @@ Step 5: Complete Purchase → Checkout with personalized recommendations
 ### AI/ML Services
 ```
 ┌─────────────────────────────────────────────────────────────┐
+│  GitHub Models       │  Universal AI fallback (GPT-4o)      │
 │  Google Gemini       │  Vision analysis for body profiling   │
 │  Anthropic Claude    │  Natural language recommendations     │
 │  Pinecone            │  Vector database for product search   │
-│  LangChain.js        │  AI agent orchestration               │
+│  OpenAI SDK          │  GitHub Models compatibility layer    │
 │  Cloudinary          │  Image upload & optimization          │
 └─────────────────────────────────────────────────────────────┘
 ```
