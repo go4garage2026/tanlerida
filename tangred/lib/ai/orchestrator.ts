@@ -114,13 +114,15 @@ export async function runTanLeridaPipeline(sessionId: string) {
       products: productsForClaude as unknown as Array<Record<string, unknown>>,
     })
 
-    const primaryProductId = String(recommendation.primaryRecommendation?.productId ?? productsForClaude[0]?.id ?? '')
+    const rec = recommendation as Record<string, unknown>
+    const primaryRec = rec.primaryRecommendation as Record<string, unknown> | undefined
+    const primaryProductId = String(primaryRec?.productId ?? productsForClaude[0]?.id ?? '')
     const product = candidateProducts.find((item) => item.id === primaryProductId) ?? candidateProducts[0] ?? productsForClaude[0]
 
     const image = await generateOutfitImage({
       baseUserPhoto: String((session.userPhotos ?? {}).fullBody ?? Object.values(session.userPhotos ?? {})[0] ?? ''),
       productName: product.name,
-      stylePrompt: String(recommendation.visualPrompt ?? ''),
+      stylePrompt: String(rec.visualPrompt ?? ''),
     })
 
     await updateTanLeridaSession(sessionId, {

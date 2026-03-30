@@ -1,5 +1,6 @@
 import { GoogleGenerativeAI } from '@google/generative-ai'
 import { isConfigured } from '@/lib/utils/guards'
+import { githubModelsVision, isGitHubModelsAvailable } from '@/lib/ai/github-models'
 
 const DEFAULT_VISION_MODEL = process.env.GEMINI_VISION_MODEL ?? 'gemini-1.5-pro'
 const DEFAULT_VALIDATION_MODEL = process.env.GEMINI_VALIDATION_MODEL ?? 'gemini-1.5-flash'
@@ -25,59 +26,48 @@ function extractJson<T>(text: string, fallback: T): T {
 
 export async function validatePhotoWithGemini(photoUrl: string) {
   const client = getGeminiClient()
+  const validationPrompt = 'Validate whether this is a real human photo, whether the body is sufficiently visible for body analysis, and whether the image appears safe for premium styling use. Return JSON with keys isRealPerson, hasFullBody, safeForProcessing, and reason.'
 
-  if (!client) {
-    return {
+  // Try Gemini first
+  if (client) {
+    const model = client.getGenerativeModel({ model: DEFAULT_VALIDATION_MODEL })
+    const result = await model.generateContent([
+      { fileData: { mimeType: 'image/jpeg', fileUri: photoUrl } },
+      { text: validationPrompt },
+    ])
+
+    return extractJson<{ isRealPerson: boolean; hasFullBody: boolean; safeForProcessing: boolean; reason: string }>(result.response.text(), {
       isRealPerson: true,
       hasFullBody: true,
       safeForProcessing: true,
-      reason: 'Mock validation accepted the image in development mode.',
-    }
+      reason: 'Unable to parse provider response.',
+    })
   }
 
-  const model = client.getGenerativeModel({ model: DEFAULT_VALIDATION_MODEL })
-  const result = await model.generateContent([
-    { fileData: { mimeType: 'image/jpeg', fileUri: photoUrl } },
-    {
-      text: 'Validate whether this is a real human photo, whether the body is sufficiently visible for body analysis, and whether the image appears safe for premium styling use. Return JSON with keys isRealPerson, hasFullBody, safeForProcessing, and reason.',
-    },
-  ])
+  // Fallback to GitHub Models (GPT-4o vision)
+  if (isGitHubModelsAvailable()) {
+    const raw = await githubModelsVision([photoUrl], validationPrompt)
+    return extractJson<{ isRealPerson: boolean; hasFullBody: boolean; safeForProcessing: boolean; reason: string }>(raw, {
+      isRealPerson: true,
+      hasFullBody: true,
+      safeForProcessing: true,
+      reason: 'Unable to parse provider response.',
+    })
+  }
 
-  return extractJson<{ isRealPerson: boolean; hasFullBody: boolean; safeForProcessing: boolean; reason: string }>(result.response.text(), {
+  // Dev mock
+  return {
     isRealPerson: true,
     hasFullBody: true,
     safeForProcessing: true,
-    reason: 'Unable to parse provider response.',
-  })
+    reason: 'Mock validation accepted the image in development mode.',
+  }
 }
 
 export async function analysePhotosWithGemini(params: { photoUrls: string[]; prompt?: string }) {
-  const client = getGeminiClient()
+  const analysisPrompt = params.prompt ?? 'Analyse these user photos and return strict JSON with keys: bodyShape, undertone, styleSensibility, posture, faceShape, notes, colourBias.'
 
-  if (!client) {
-    return {
-      bodyShape: 'Rectangle athletic frame',
-      undertone: 'Warm neutral',
-      styleSensibility: 'Classic professional',
-      posture: 'Upright and assured',
-      faceShape: 'Oval',
-      validation: 'Mock analysis used because Gemini is not configured.',
-    }
-  }
-
-  const model = client.getGenerativeModel({ model: DEFAULT_VISION_MODEL })
-  const parts: Array<{ text: string } | { fileData: { mimeType: string; fileUri: string } }> = params.photoUrls.map((url) => ({
-    fileData: { mimeType: 'image/jpeg', fileUri: url },
-  }))
-
-  parts.push({
-    text:
-      params.prompt ??
-      'Analyse these user photos and return strict JSON with keys: bodyShape, undertone, styleSensibility, posture, faceShape, notes, colourBias.',
-  })
-
-  const result = await model.generateContent(parts)
-  return extractJson(result.response.text(), {
+  const fallback = {
     bodyShape: 'Rectangle athletic frame',
     undertone: 'Warm neutral',
     styleSensibility: 'Classic professional',
@@ -85,5 +75,27 @@ export async function analysePhotosWithGemini(params: { photoUrls: string[]; pro
     faceShape: 'Oval',
     notes: 'Fallback parse result.',
     colourBias: ['black', 'brown'],
-  })
+  }
+
+  // Try Gemini first
+  const client = getGeminiClient()
+  if (client) {
+    const model = client.getGenerativeModel({ model: DEFAULT_VISION_MODEL })
+    const parts: Array<{ text: string } | { fileData: { mimeType: string; fileUri: string } }> = params.photoUrls.map((url) => ({
+      fileData: { mimeType: 'image/jpeg', fileUri: url },
+    }))
+    parts.push({ text: analysisPrompt })
+
+    const result = await model.generateContent(parts)
+    return extractJson(result.response.text(), fallback)
+  }
+
+  // Fallback to GitHub Models (GPT-4o vision)
+  if (isGitHubModelsAvailable()) {
+    const raw = await githubModelsVision(params.photoUrls, analysisPrompt)
+    return extractJson(raw, fallback)
+  }
+
+  // Dev mock
+  return { ...fallback, validation: 'Mock analysis used because no AI provider is configured.' }
 }

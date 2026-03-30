@@ -1,5 +1,6 @@
 import Anthropic from '@anthropic-ai/sdk'
 import { isConfigured } from '@/lib/utils/guards'
+import { githubModelsChat, githubModelsChatMultiTurn, isGitHubModelsAvailable } from '@/lib/ai/github-models'
 
 export const TAN_Lerida_SYSTEM_PROMPT = `You are Tan Lerida — Tangred's master tailor and personal style consultant.
 You speak with quiet authority, warmth, and precise craftsmanship language.
@@ -17,22 +18,34 @@ function getAnthropicClient() {
 
 const model = process.env.ANTHROPIC_TEXT_MODEL ?? 'claude-3-5-sonnet-latest'
 
-export async function claudeStyleConsultation(messages: Array<{ role: 'user' | 'assistant'; content: string }>, userContext?: Record<string, unknown>) {
-  const client = getAnthropicClient()
+function extractJsonFromText(raw: string): Record<string, unknown> {
+  const match = raw.match(/\{[\s\S]*\}/)
+  return match ? JSON.parse(match[0]) : { raw }
+}
 
-  if (!client) {
-    return 'What are you looking for today — a boardroom bag, a finishing belt, or a more complete Tangred look?'
+export async function claudeStyleConsultation(messages: Array<{ role: 'user' | 'assistant'; content: string }>, userContext?: Record<string, unknown>) {
+  const systemPrompt = `${TAN_Lerida_SYSTEM_PROMPT}\nUser context: ${JSON.stringify(userContext ?? {})}`
+
+  // Try Anthropic first
+  const client = getAnthropicClient()
+  if (client) {
+    const response = await client.messages.create({
+      model,
+      system: systemPrompt,
+      max_tokens: 700,
+      messages,
+    })
+    const content = response.content.find((entry) => entry.type === 'text')
+    return content && 'text' in content ? content.text : ''
   }
 
-  const response = await client.messages.create({
-    model,
-    system: `${TAN_Lerida_SYSTEM_PROMPT}\nUser context: ${JSON.stringify(userContext ?? {})}`,
-    max_tokens: 700,
-    messages,
-  })
+  // Fallback to GitHub Models
+  if (isGitHubModelsAvailable()) {
+    return githubModelsChatMultiTurn(systemPrompt, messages, 700)
+  }
 
-  const content = response.content.find((entry) => entry.type === 'text')
-  return content && 'text' in content ? content.text : ''
+  // Dev mock
+  return 'What are you looking for today — a boardroom bag, a finishing belt, or a more complete Tangred look?'
 }
 
 export async function claudeGenerateRecommendation(params: {
@@ -41,38 +54,46 @@ export async function claudeGenerateRecommendation(params: {
   products: Array<Record<string, unknown>>
   stylePreferences: Record<string, unknown>
 }) {
-  const client = getAnthropicClient()
+  const userMessage = `Return JSON for a Tangred recommendation. Body profile: ${JSON.stringify(params.userProfile)}. Vision analysis: ${JSON.stringify(params.geminiAnalysis)}. Preferences: ${JSON.stringify(params.stylePreferences)}. Products: ${JSON.stringify(params.products)}.
 
-  if (!client) {
-    const [primary, ...alternatives] = params.products
-    return {
-      primaryRecommendation: {
-        productId: String(primary?.id ?? ''),
-        narrative:
-          'Your profile calls for a disciplined, structured leather silhouette with enough authority for formal work settings while remaining versatile across travel and evening use.',
-        whyItWorks: 'The piece balances your proportions, supports a refined palette, and mirrors a composed professional wardrobe.',
-        craftStory: 'The selected Tangred leather brings controlled texture, careful edge finishing, and long-wear polish.',
-      },
-      alternatives: alternatives.slice(0, 2).map((product) => ({ productId: String(product.id), brief: 'An alternative with a slightly different shape or carry profile.' })),
-      visualPrompt: 'Luxury editorial portrait of the customer carrying a structured Tangred leather bag, dark background, cinematic lighting, premium Indian tailoring aesthetic.',
-      signOff: 'This is my recommendation for you — crafted to be worn for a lifetime.',
-    }
+Return a JSON object with these keys:
+- primaryRecommendation: { productId, narrative, whyItWorks, craftStory }
+- alternatives: [{ productId, brief }]
+- visualPrompt: a text prompt for generating an editorial image of the customer with the product
+- signOff: your closing line`
+
+  // Try Anthropic first
+  const client = getAnthropicClient()
+  if (client) {
+    const response = await client.messages.create({
+      model,
+      system: TAN_Lerida_SYSTEM_PROMPT,
+      max_tokens: 1200,
+      messages: [{ role: 'user', content: userMessage }],
+    })
+    const text = response.content.find((entry) => entry.type === 'text')
+    const raw = text && 'text' in text ? text.text : '{}'
+    return extractJsonFromText(raw)
   }
 
-  const response = await client.messages.create({
-    model,
-    system: TAN_Lerida_SYSTEM_PROMPT,
-    max_tokens: 1200,
-    messages: [
-      {
-        role: 'user',
-        content: `Return JSON for a Tangred recommendation. Body profile: ${JSON.stringify(params.userProfile)}. Vision analysis: ${JSON.stringify(params.geminiAnalysis)}. Preferences: ${JSON.stringify(params.stylePreferences)}. Products: ${JSON.stringify(params.products)}.`,
-      },
-    ],
-  })
+  // Fallback to GitHub Models
+  if (isGitHubModelsAvailable()) {
+    const raw = await githubModelsChat(TAN_Lerida_SYSTEM_PROMPT, userMessage, 1200)
+    return extractJsonFromText(raw)
+  }
 
-  const text = response.content.find((entry) => entry.type === 'text')
-  const raw = text && 'text' in text ? text.text : '{}'
-  const match = raw.match(/\{[\s\S]*\}/)
-  return match ? JSON.parse(match[0]) : { raw }
+  // Dev mock
+  const [primary, ...alternatives] = params.products
+  return {
+    primaryRecommendation: {
+      productId: String(primary?.id ?? ''),
+      narrative:
+        'Your profile calls for a disciplined, structured leather silhouette with enough authority for formal work settings while remaining versatile across travel and evening use.',
+      whyItWorks: 'The piece balances your proportions, supports a refined palette, and mirrors a composed professional wardrobe.',
+      craftStory: 'The selected Tangred leather brings controlled texture, careful edge finishing, and long-wear polish.',
+    },
+    alternatives: alternatives.slice(0, 2).map((product) => ({ productId: String(product.id), brief: 'An alternative with a slightly different shape or carry profile.' })),
+    visualPrompt: 'Luxury editorial portrait of the customer carrying a structured Tangred leather bag, dark background, cinematic lighting, premium Indian tailoring aesthetic.',
+    signOff: 'This is my recommendation for you — crafted to be worn for a lifetime.',
+  }
 }

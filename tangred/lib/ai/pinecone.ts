@@ -1,10 +1,10 @@
 import { Pinecone } from '@pinecone-database/pinecone'
 import { GoogleGenerativeAI } from '@google/generative-ai'
 import { isConfigured } from '@/lib/utils/guards'
+import { githubModelsEmbed, isGitHubModelsAvailable } from '@/lib/ai/github-models'
 
 const indexName = process.env.PINECONE_INDEX_NAME ?? 'tangred-products'
 const EMBEDDING_MODEL = 'text-embedding-004'
-const EMBEDDING_DIMENSION = 768
 
 function getClient() {
   if (!isConfigured(process.env.PINECONE_API_KEY)) {
@@ -20,12 +20,21 @@ function getEmbeddingClient() {
 }
 
 async function generateEmbedding(text: string): Promise<number[] | null> {
+  // Try Gemini embeddings first
   const client = getEmbeddingClient()
-  if (!client) return null
+  if (client) {
+    const model = client.getGenerativeModel({ model: EMBEDDING_MODEL })
+    const result = await model.embedContent(text)
+    return result.embedding.values
+  }
 
-  const model = client.getGenerativeModel({ model: EMBEDDING_MODEL })
-  const result = await model.embedContent(text)
-  return result.embedding.values
+  // Fallback to GitHub Models (text-embedding-3-small)
+  if (isGitHubModelsAvailable()) {
+    const embedding = await githubModelsEmbed(text)
+    return embedding.length > 0 ? embedding : null
+  }
+
+  return null
 }
 
 function buildProfileText(params: {
@@ -70,7 +79,7 @@ export async function matchProductsFromEmbeddings(params: {
 
   const index = client.index(indexName)
   const response = await index.query({
-    vector: embedding.length === EMBEDDING_DIMENSION ? embedding : embedding.slice(0, EMBEDDING_DIMENSION),
+    vector: embedding,
     topK: params.topK,
     includeMetadata: true,
   })
