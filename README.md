@@ -9,5 +9,6 @@ Top-level structure:
 - `docs/`: documentation and operational notes
 
 Deployment:
-- Primary web deployment target is the `website/` folder.
-- Run from that folder with `npm install` and `npm run build`.
+- Primary deployment target is the `website/` application.
+- Root-level `Dockerfile` and `railway.json` are configured to build and run `website/` from the repo root.
+- Local app verification stays inside `website/` with `npm install` and `npm run build`.

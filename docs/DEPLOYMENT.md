@@ -1,6 +1,6 @@
 # Deployment
 
-The active deployment target for this repository is the standalone Next.js server in `tangred/`.
+The active deployment target for this repository is the standalone Next.js server in `website/`.
 
 ## Runtime
 
@@ -12,19 +12,33 @@ The active deployment target for this repository is the standalone Next.js serve
 
 Deployment files:
 
-- `tangred/Dockerfile`
-- `tangred/railway.json`
+- `Dockerfile`
+- `railway.json`
+- `website/Dockerfile`
+- `website/railway.json`
+
+Recommended deploy target:
+
+- Deploy the repository root.
+- The root `Dockerfile` is wired to copy and build the `website/` application specifically.
 
 Local verification before deploy:
 
 ```bash
-cd tangred
-npm run lint
+cd website
+npm install
 npm run build
 ```
 
+## Website App
+
+App-specific runtime files remain inside `website/`:
+
+- `website/package.json`
+- `website/prisma/`
+- `website/public/`
+- `website/.env.example`
+
 ## Firebase
 
-There is no maintained Firebase static-frontend deployment path in the current application architecture. The app uses server components, API routes, middleware, and auth flows that run as one full-stack Next.js service.
-
-If a Firebase frontend-only deployment is required later, that needs a real frontend/backend split refactor first.
+There is no maintained Firebase static-frontend deployment path in the current architecture. The app relies on server components, API routes, middleware, auth flows, Prisma, and payment handlers that run as one full-stack Next.js service.
