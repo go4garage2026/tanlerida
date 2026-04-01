@@ -29,25 +29,29 @@ export function CinematicShowcase() {
   const spotlightPrice = spotlightProduct.discountPrice ?? spotlightProduct.basePrice
 
   return (
-    <section className="relative overflow-hidden px-6 py-20 md:px-10 lg:px-16">
+    <section className="relative overflow-hidden py-20">
       <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#C0392B] to-transparent opacity-70" />
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(192,57,43,0.18),transparent_28%),radial-gradient(circle_at_bottom_right,rgba(191,160,122,0.12),transparent_24%)]" />
 
-      <div className="relative mx-auto max-w-[1440px]">
-        <div className="mb-10 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+      <div className="section-shell">
+        <div className="mb-10 grid gap-5 lg:grid-cols-[minmax(0,1fr)_420px] lg:items-end">
           <div>
             <p className="mb-4 font-label text-[11px] tracking-[0.4em] text-[#C0392B]">FEATURED EDIT</p>
             <h2 className="max-w-3xl font-heading text-[36px] leading-[1.02] text-white md:text-[52px]">
-              A cinematic spotlight for Tangred&apos;s most decisive leather pieces.
+              A sharper first look at the pieces that define the Tangred wardrobe.
             </h2>
           </div>
-          <p className="max-w-xl text-sm leading-6 text-[#B3B3B3] md:text-base">
-            Built with the dramatic hierarchy, layered imagery, and stacked discovery patterns of streaming-style merchandising while staying grounded in Tangred&apos;s catalog and brand voice.
-          </p>
+          <div className="rounded-[4px] border border-[#2A2A2A] bg-[#111111] p-5">
+            <p className="text-[11px] uppercase tracking-[0.28em] text-[#BFA07A]">What this section does</p>
+            <p className="mt-3 text-sm leading-6 text-[#B3B3B3] md:text-base">
+              It introduces the collection with stronger contrast, more useful product context, and a cleaner path into
+              the catalog than the previous homepage composition.
+            </p>
+          </div>
         </div>
 
         <div className="grid gap-6 xl:grid-cols-[minmax(0,1.45fr)_minmax(360px,0.85fr)]">
-          <article className="group relative min-h-[560px] overflow-hidden rounded-[28px] border border-white/10 bg-[#141414] shadow-[0_40px_120px_rgba(0,0,0,0.45)]">
+          <article className="group relative min-h-[560px] overflow-hidden rounded-[4px] border border-white/10 bg-[#141414] shadow-[0_40px_120px_rgba(0,0,0,0.45)]">
             {spotlightImage ? (
               <Image
                 src={spotlightImage.url}
@@ -107,7 +111,7 @@ export function CinematicShowcase() {
                 </div>
 
                 <div className="grid gap-3 sm:grid-cols-3 xl:min-w-[360px]">
-                  <div className="rounded-3xl border border-white/10 bg-black/35 px-5 py-4 backdrop-blur-sm sm:col-span-3">
+                  <div className="rounded-[4px] border border-white/10 bg-black/35 px-5 py-4 backdrop-blur-sm sm:col-span-3">
                     <p className="text-[11px] uppercase tracking-[0.28em] text-[#B3B3B3]">Starting at</p>
                     <div className="mt-2 flex items-end gap-3">
                       <p className="font-display text-3xl text-white md:text-4xl">{formatPrice(spotlightPrice)}</p>
@@ -117,7 +121,7 @@ export function CinematicShowcase() {
                     </div>
                   </div>
                   {metrics.map((metric) => (
-                    <div key={metric.label} className="rounded-3xl border border-white/10 bg-black/35 px-5 py-4 backdrop-blur-sm">
+                    <div key={metric.label} className="rounded-[4px] border border-white/10 bg-black/35 px-5 py-4 backdrop-blur-sm">
                       <p className="text-2xl font-semibold text-white md:text-3xl">{metric.value}</p>
                       <p className="mt-1 text-xs uppercase tracking-[0.24em] text-[#B3B3B3]">{metric.label}</p>
                     </div>
@@ -127,8 +131,8 @@ export function CinematicShowcase() {
             </div>
           </article>
 
-          <aside className="flex flex-col gap-4 rounded-[28px] border border-white/10 bg-[#141414] p-4 shadow-[0_30px_90px_rgba(0,0,0,0.35)]">
-            <div className="flex items-center justify-between rounded-3xl border border-white/10 bg-black/30 px-5 py-4">
+          <aside className="flex flex-col gap-4 rounded-[4px] border border-white/10 bg-[#141414] p-4 shadow-[0_30px_90px_rgba(0,0,0,0.35)]">
+            <div className="flex items-center justify-between rounded-[4px] border border-white/10 bg-black/30 px-5 py-4">
               <div>
                 <p className="text-xs uppercase tracking-[0.28em] text-[#B3B3B3]">Continue exploring</p>
                 <p className="mt-1 text-lg font-semibold text-white">More from the Tangred edit</p>
@@ -151,7 +155,7 @@ export function CinematicShowcase() {
                   <Link
                     key={product.id}
                     href={`/products/${product.slug}`}
-                    className="group relative min-h-[168px] overflow-hidden rounded-3xl border border-white/10"
+                    className="group relative min-h-[168px] overflow-hidden rounded-[4px] border border-white/10"
                   >
                     {image ? (
                       <Image
